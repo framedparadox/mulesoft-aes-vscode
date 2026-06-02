@@ -1,0 +1,108 @@
+{
+    "name": "mule-aes",
+    "displayName": "Mulesoft AES Encrypt / Decrypt",
+    "description": "Encrypt and decrypt text using MuleSoft AES-256.",
+    "version": "0.0.1",
+    "publisher": "framedparadox",
+    "license": "MIT",
+    "icon": "resources/icon.png",
+    "keywords": [
+        "mulesoft",
+        "aes",
+        "encrypt",
+        "decrypt"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/framedparadox/mulesoft-util-vscode.git"
+    },
+    "bugs": {
+        "url": "https://github.com/framedparadox/mulesoft-util-vscode/issues"
+    },
+    "homepage": "https://github.com/framedparadox/mulesoft-util-vscode#readme",
+    "engines": {
+        "vscode": "^1.105.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [],
+    "main": "./dist/extension.js",
+    "contributes": {
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "mulesoft-aes",
+                    "title": "MuleSoft AES",
+                    "icon": "resources/icons/activitybar.svg"
+                }
+            ]
+        },
+        "views": {
+            "mulesoft-aes": [
+                {
+                    "id": "aesToolsView",
+                    "name": "MuleSoft AES",
+                    "icon": "resources/icons/activitybar.svg",
+                    "type": "webview"
+                }
+            ]
+        },
+        "commands": [
+            {
+                "command": "aes.encryptDecrypt",
+                "title": "MuleSoft AES Encrypt / Decrypt",
+                "icon": "resources/icons/aes.svg"
+            },
+            {
+                "command": "base64.encodeDecode",
+                "title": "Base64 Encode / Decode",
+                "icon": "resources/icons/base64.svg"
+            },
+            {
+                "command": "aes.openSettings",
+                "title": "MuleSoft AES: Settings",
+                "icon": "$(gear)"
+            }
+        ],
+        "menus": {
+            "editor/title": [
+                {
+                    "command": "aes.encryptDecrypt",
+                    "when": "resourceLangId == yaml || resourceExtname == .properties",
+                    "group": "navigation"
+                }
+            ]
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run package",
+        "compile": "webpack",
+        "watch": "webpack --watch",
+        "package": "webpack --mode production --devtool hidden-source-map",
+        "compile-tests": "tsc -p . --outDir out",
+        "watch-tests": "tsc -p . -w --outDir out",
+        "pretest": "npm run compile-tests && npm run compile && npm run lint",
+        "lint": "eslint src",
+        "lint:fix": "eslint src --fix",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "test": "vscode-test",
+        "build": "webpack --mode development"
+    },
+    "devDependencies": {
+        "@types/mocha": "^10.0.10",
+        "@types/node": "22.x",
+        "@types/vscode": "^1.105.0",
+        "@typescript-eslint/eslint-plugin": "^8.45.0",
+        "@typescript-eslint/parser": "^8.45.0",
+        "@vscode/test-cli": "^0.0.11",
+        "@vscode/test-electron": "^2.5.2",
+        "eslint": "^9.36.0",
+        "prettier": "^3.6.2",
+        "ts-loader": "^9.5.4",
+        "typescript": "^5.9.3",
+        "webpack": "^5.102.0",
+        "webpack-cli": "^6.0.1"
+    }
+}
