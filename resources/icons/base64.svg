@@ -5,8 +5,8 @@
       <stop offset="1" stop-color="#7C3AED"/>
     </linearGradient>
   </defs>
-  <!-- Background circle -->
-  <circle cx="256" cy="256" r="240" fill="url(#b64Grad)"/>
+  <!-- Background square -->
+  <rect x="32" y="32" width="448" height="448" fill="url(#b64Grad)"/>
   <!-- Text "64" -->
-  <text x="256" y="300" font-family="Arial, Helvetica, sans-serif" font-size="180" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="-5">64</text>
+  <text x="256" y="320" font-family="Arial, Helvetica, sans-serif" font-size="200" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="-8">64</text>
 </svg>

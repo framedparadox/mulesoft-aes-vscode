@@ -10,16 +10,17 @@
         "mulesoft",
         "aes",
         "encrypt",
-        "decrypt"
+        "decrypt",
+        "base64"
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/framedparadox/mulesoft-util-vscode.git"
+        "url": "https://github.com/framedparadox/mulesoft-aes-vscode.git"
     },
     "bugs": {
-        "url": "https://github.com/framedparadox/mulesoft-util-vscode/issues"
+        "url": "https://github.com/framedparadox/mulesoft-aes-vscode/issues"
     },
-    "homepage": "https://github.com/framedparadox/mulesoft-util-vscode#readme",
+    "homepage": "https://github.com/framedparadox/mulesoft-aes-vscode#readme",
     "engines": {
         "vscode": "^1.105.0"
     },
