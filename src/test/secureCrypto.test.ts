@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { CryptoOptions, decrypt, encrypt, SUPPORTED_ALGORITHMS, SUPPORTED_MODES } from '../secureProperties/secureCrypto';
+import { CryptoOptions, decrypt, encrypt, SUPPORTED_ALGORITHMS, SUPPORTED_MODES } from '../aesEnhanced/secureCrypto';
 
 // 32-char key satisfies the key-length requirement of every algorithm
 // (AES-256 = 32, DESede = 24, RC2 = 16, DES = 8).
@@ -60,6 +60,11 @@ suite('Secure Properties Crypto', () => {
     test('rejects keys shorter than 16 characters', () => {
         assert.throws(() => encrypt('x', 'short'), /at least 16/);
         assert.throws(() => decrypt('![abc]', 'short'), /at least 16/);
+    });
+
+    test('rejects random-IV payloads that do not contain ciphertext', () => {
+        const ivOnly = `![${Buffer.alloc(16).toString('base64')}]`;
+        assert.throws(() => decrypt(ivOnly, KEY, { algorithm: 'AES', mode: 'CBC', useRandomIv: true }), /too short/);
     });
 
     test('round-trips Unicode text', () => {

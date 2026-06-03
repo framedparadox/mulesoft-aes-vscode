@@ -14,18 +14,18 @@ properties directly inside your editor. It ships **three complementary tools**:
    cipher modes, and random IVs**.
 3. **Base64 Encode / Decode** — a quick text/file Base64 utility.
 
-All encryption happens locally; keys are stored in VS Code's secret storage and
-never leave your machine.
+All encryption happens locally. KeyIdentifier names and keys are stored locally
+only in VS Code's secret storage and never leave your machine.
 
 ---
 
 ## ✨ Features at a Glance
 
-| Tool | Sidebar entry | Algorithms | Modes | Random IV | Editor toolbar button |
-|------|---------------|------------|-------|-----------|-----------------------|
-| **AES Encrypt / Decrypt** | MuleSoft AES Encrypt / Decrypt | AES-128 / AES-256 | CBC | No (derived IV) | Yes (`.yaml`, `.yml`, `.properties`) |
-| **Secure Properties Encrypt / Decrypt** | Secure Properties Encrypt / Decrypt | AES, Blowfish, DES, DESede, RC2, RCA | CBC, CFB, ECB, OFB | Optional | No (launch from sidebar / palette) |
-| **Base64 Encode / Decode** | Base64 Encode / Decode | — | — | — | No |
+| Tool | Algorithms | Modes | Random IV | Editor toolbar button |
+|------|------------|-------|-----------|-----------------------|
+| **AES Encrypt / Decrypt** | AES-128 / AES-256 | CBC | No (derived IV) | Yes (`.yaml`, `.yml`, `.properties`) |
+| **Secure Properties Encrypt / Decrypt** | AES, Blowfish, DES, DESede, RC2, RCA | CBC, CFB, ECB, OFB | Optional | No (launch from sidebar / palette) |
+| **Base64 Encode / Decode** | — | — | — | No |
 
 > The two encryption tools are **independent screens**. The AES tool is
 > intentionally unchanged and remains the one wired into the YAML/properties
@@ -69,7 +69,7 @@ A dedicated screen that replicates the broader
 Use this when you need an algorithm or cipher mode other than the AES/CBC
 default, or when you want random initialization vectors.
 
-It has its own sidebar entry (purple **SP** shield icon) and its own webview
+It has its own sidebar entry and its own webview
 panel. The screen is the AES layout **plus an extra options row** above the key
 and KeyIdentifier fields:
 
@@ -108,7 +108,7 @@ These mirror the algorithms offered by the MuleSoft secure properties tool:
 |-----------|-------------|---------|-----------------|
 | **AES** | Advanced Encryption Standard (default) | 16 bytes | 16 / 24 / 32 chars → AES-128 / 192 / 256 |
 | **Blowfish** | Bruce Schneier's block cipher | 8 bytes | ≥ 16 chars (up to 56 bytes used) |
-| **DES** | Data Encryption Standard (legacy) | 8 bytes | ≥ 8 chars |
+| **DES** | Data Encryption Standard (legacy) | 8 bytes | ≥ 16 chars (first 8 bytes used) |
 | **DESede** | Triple DES (3DES) | 8 bytes | ≥ 24 chars |
 | **RC2** | Rivest Cipher 2 | 8 bytes | ≥ 16 chars |
 | **RCA** | RC4 / ARCFOUR stream cipher | none | ≥ 16 chars |
@@ -206,6 +206,8 @@ Both encryption tools read from the same securely stored set of
   - **PROD** — Production
 - **Custom KeyIdentifiers**: add your own named keys.
 - **Secure storage**: keys live in VS Code's built-in secret storage.
+- **Local-only details**: KeyIdentifier names and keys are stored on this
+  machine only; the extension does not sync or send them anywhere.
 - **Key visibility toggle**: show/hide keys with partial masking.
 - **Never leaves your machine**: all encryption is local; nothing is transmitted.
 
@@ -284,7 +286,7 @@ from the sidebar or the Command Palette.
 | Command | Title | Where |
 |---------|-------|-------|
 | `aes.encryptDecrypt` | MuleSoft AES Encrypt / Decrypt | Sidebar, editor toolbar, palette |
-| `secureProperties.encryptDecrypt` | MuleSoft Secure Properties Encrypt / Decrypt | Sidebar, palette |
+| `aesEnhanced.encryptDecrypt` | MuleSoft Secure Properties Encrypt / Decrypt | Sidebar, palette |
 | `base64.encodeDecode` | Base64 Encode / Decode | Sidebar, palette |
 | `aes.openSettings` | MuleSoft AES: Settings | Sidebar |
 
@@ -409,5 +411,3 @@ Licensed under the [MIT License](LICENSE).
 - **Reference tool**: [Secure Properties generator](https://secure-properties-api.us-e1.cloudhub.io/)
 
 ---
-
-**Made with ❤️ for MuleSoft Developers**

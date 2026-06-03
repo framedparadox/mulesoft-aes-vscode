@@ -150,6 +150,9 @@ export function decrypt(text: string, key: string, options: CryptoOptions = {}):
     let iv: Buffer | null = null;
     if (usesIv(spec, mode)) {
         if (useRandomIv) {
+            if (data.length <= spec.ivLength) {
+                throw new Error(`Encrypted payload is too short to contain a ${spec.ivLength}-byte random IV`);
+            }
             iv = data.subarray(0, spec.ivLength);
             data = data.subarray(spec.ivLength);
         } else {

@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
-import { decrypt, encrypt, SUPPORTED_ALGORITHMS, SUPPORTED_MODES } from '../secureProperties/secureCrypto';
+import { decrypt, encrypt, SUPPORTED_ALGORITHMS, SUPPORTED_MODES } from '../aesEnhanced/secureCrypto';
 import { getAesKeyIdentifiers } from '../storage/keyStore';
 import { contentSecurityPolicy, createNonce, escapeHtml, iconUri } from './webviewUtils';
 
 /** Webview panel for MuleSoft Secure Properties encrypt / decrypt (multi-algorithm). */
-export class SecurePropertiesPanel {
-    public static currentPanel: SecurePropertiesPanel | undefined;
+export class AESEnhancedPanel {
+    public static currentPanel: AESEnhancedPanel | undefined;
     private readonly _panel: vscode.WebviewPanel;
     private readonly _context: vscode.ExtensionContext;
     private _disposables: vscode.Disposable[] = [];
@@ -34,13 +34,13 @@ export class SecurePropertiesPanel {
 
     public static render(context: vscode.ExtensionContext): void {
         const column = vscode.ViewColumn.One;
-        if (SecurePropertiesPanel.currentPanel) {
-            SecurePropertiesPanel.currentPanel._panel.reveal(column);
+        if (AESEnhancedPanel.currentPanel) {
+            AESEnhancedPanel.currentPanel._panel.reveal(column);
             return;
         }
 
         const panel = vscode.window.createWebviewPanel(
-            'secureProperties.encryptDecrypt',
+            'aesEnhanced.encryptDecrypt',
             'MuleSoft Secure Properties Encrypt / Decrypt',
             column,
             {
@@ -49,8 +49,8 @@ export class SecurePropertiesPanel {
                 localResourceRoots: [context.extensionUri],
             }
         );
-        panel.iconPath = vscode.Uri.joinPath(context.extensionUri, 'resources', 'icons', 'secure-properties.svg');
-        SecurePropertiesPanel.currentPanel = new SecurePropertiesPanel(panel, context);
+        panel.iconPath = vscode.Uri.joinPath(context.extensionUri, 'resources', 'icons', 'aes-plus.svg');
+        AESEnhancedPanel.currentPanel = new AESEnhancedPanel(panel, context);
     }
 
     public refreshKeyIdentifiers(): void {
@@ -58,7 +58,7 @@ export class SecurePropertiesPanel {
     }
 
     public dispose(): void {
-        SecurePropertiesPanel.currentPanel = undefined;
+        AESEnhancedPanel.currentPanel = undefined;
         this._panel.dispose();
         while (this._disposables.length) {
             this._disposables.pop()?.dispose();
@@ -88,7 +88,7 @@ export class SecurePropertiesPanel {
         const keyIdentifiers = await getAesKeyIdentifiers(this._context);
         const firstKey = keyIdentifiers[0]?.key ?? '';
         const firstKeyMasked = this.maskKeyForDisplay(firstKey);
-        const headerIcon = iconUri(webview, this._context.extensionUri, 'secure-properties.svg');
+        const headerIcon = iconUri(webview, this._context.extensionUri, 'aes-plus.svg');
         const keyIdentifierOptions = keyIdentifiers
             .map(
                 (keyIdentifier, index) =>

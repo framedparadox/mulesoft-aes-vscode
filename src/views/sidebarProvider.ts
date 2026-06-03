@@ -16,10 +16,10 @@ const TOOLS: SidebarItem[] = [
         iconFile: 'aes.svg',
     },
     {
-        label: 'Secure Properties Encrypt / Decrypt',
+        label: 'MuleSoft Secure Properties Encrypt / Decrypt',
         description: 'Encrypt or decrypt with multiple algorithms',
-        command: 'secureProperties.encryptDecrypt',
-        iconFile: 'secure-properties.svg',
+        command: 'aesEnhanced.encryptDecrypt',
+        iconFile: 'aes-plus.svg',
     },
     {
         label: 'Base64 Encode / Decode',

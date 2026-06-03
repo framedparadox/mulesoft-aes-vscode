@@ -56,9 +56,9 @@
                 "icon": "resources/icons/aes.svg"
             },
             {
-                "command": "secureProperties.encryptDecrypt",
+                "command": "aesEnhanced.encryptDecrypt",
                 "title": "MuleSoft Secure Properties Encrypt / Decrypt",
-                "icon": "resources/icons/secure-properties.svg"
+                "icon": "resources/icons/aes-plus.svg"
             },
             {
                 "command": "base64.encodeDecode",
