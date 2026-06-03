@@ -129,6 +129,15 @@ export class SettingsPanel {
         display: flex; align-items: center; gap: 7px;
         border-bottom: 1px solid var(--vscode-panel-border); padding-bottom: 10px;
     }
+    .local-note {
+        margin: 0 0 14px;
+        padding: 9px 10px;
+        border-left: 3px solid var(--vscode-textLink-foreground);
+        background: var(--vscode-textBlockQuote-background);
+        color: var(--vscode-descriptionForeground);
+        font-size: 0.9em;
+        line-height: 1.4;
+    }
     .card-title-icon { width: 16px; height: 16px; }
     .aes-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
     .aes-table thead th:nth-child(1) { width: 180px; }
@@ -220,6 +229,9 @@ export class SettingsPanel {
             <img class="card-title-icon" src="${aesIcon}" alt="" />
             AES KeyIdentifier Settings
         </div>
+        <p class="local-note">
+            KeyIdentifier names and encryption keys are stored locally ONLY in VS Code secret storage on this machine.
+        </p>
         <table class="aes-table">
             <thead>
                 <tr>
