@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { AesPanel } from './views/aesPanel';
 import { Base64Panel } from './views/base64Panel';
+import { AESEnhancedPanel } from './views/aesEnhancedPanel';
 import { SettingsPanel } from './views/settingsPanel';
 import { SidebarProvider } from './views/sidebarProvider';
 
@@ -14,6 +15,10 @@ export function activate(context: vscode.ExtensionContext): void {
             AesPanel.render(context);
         }),
 
+        vscode.commands.registerCommand('aesEnhanced.encryptDecrypt', () => {
+            AESEnhancedPanel.render(context);
+        }),
+
         vscode.commands.registerCommand('base64.encodeDecode', () => {
             Base64Panel.render(context);
         }),
@@ -21,6 +26,7 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('aes.openSettings', () => {
             SettingsPanel.render(context, () => {
                 AesPanel.currentPanel?.refreshKeyIdentifiers();
+                AESEnhancedPanel.currentPanel?.refreshKeyIdentifiers();
             });
         })
     );
