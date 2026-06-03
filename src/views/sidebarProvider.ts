@@ -16,6 +16,12 @@ const TOOLS: SidebarItem[] = [
         iconFile: 'aes.svg',
     },
     {
+        label: 'Secure Properties Encrypt / Decrypt',
+        description: 'Encrypt or decrypt with multiple algorithms',
+        command: 'secureProperties.encryptDecrypt',
+        iconFile: 'secure-properties.svg',
+    },
+    {
         label: 'Base64 Encode / Decode',
         description: 'Encode or decode text and files',
         command: 'base64.encodeDecode',

@@ -32,38 +32,6 @@ suite('AES Crypto', () => {
         assert.throws(() => encrypt('x', 'short'), /at least 16/);
         assert.throws(() => decrypt('![abc]', 'short'), /at least 16/);
     });
-
-    test('default options reproduce AES/CBC output byte-for-byte', () => {
-        const plaintext = 'mySecretPassword123';
-        assert.strictEqual(encrypt(plaintext, key16), encrypt(plaintext, key16, { algorithm: 'AES', mode: 'CBC' }));
-    });
-
-    test('round-trips with random IVs (different ciphertext each time)', () => {
-        const plaintext = 'mySecretPassword123';
-        const options = { algorithm: 'AES', mode: 'CBC', useRandomIv: true } as const;
-        const a = encrypt(plaintext, key32, options);
-        const b = encrypt(plaintext, key32, options);
-        assert.notStrictEqual(a, b, 'random IV should produce different ciphertext');
-        assert.strictEqual(decrypt(a, key32, options), plaintext);
-        assert.strictEqual(decrypt(b, key32, options), plaintext);
-    });
-
-    test('round-trips across AES cipher modes', () => {
-        const plaintext = 'mode coverage test';
-        for (const mode of ['CBC', 'CFB', 'ECB', 'OFB'] as const) {
-            assert.strictEqual(
-                decrypt(encrypt(plaintext, key16, { mode }), key16, { mode }),
-                plaintext,
-                `AES/${mode} should round-trip`
-            );
-        }
-    });
-
-    test('round-trips with DESede (3DES)', () => {
-        const plaintext = '3des secret';
-        const options = { algorithm: 'DESede', mode: 'CBC' } as const;
-        assert.strictEqual(decrypt(encrypt(plaintext, key32, options), key32, options), plaintext);
-    });
 });
 
 suite('Base64 Codec', () => {

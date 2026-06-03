@@ -56,6 +56,11 @@
                 "icon": "resources/icons/aes.svg"
             },
             {
+                "command": "secureProperties.encryptDecrypt",
+                "title": "MuleSoft Secure Properties Encrypt / Decrypt",
+                "icon": "resources/icons/secure-properties.svg"
+            },
+            {
                 "command": "base64.encodeDecode",
                 "title": "Base64 Encode / Decode",
                 "icon": "resources/icons/base64.svg"

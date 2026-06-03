@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
-import { decrypt, encrypt } from '../aes/aesCrypto';
+import { decrypt, encrypt, SUPPORTED_ALGORITHMS, SUPPORTED_MODES } from '../secureProperties/secureCrypto';
 import { getAesKeyIdentifiers } from '../storage/keyStore';
 import { contentSecurityPolicy, createNonce, escapeHtml, iconUri } from './webviewUtils';
 
-/** Webview panel for MuleSoft AES encrypt / decrypt. */
-export class AesPanel {
-    public static currentPanel: AesPanel | undefined;
+/** Webview panel for MuleSoft Secure Properties encrypt / decrypt (multi-algorithm). */
+export class SecurePropertiesPanel {
+    public static currentPanel: SecurePropertiesPanel | undefined;
     private readonly _panel: vscode.WebviewPanel;
     private readonly _context: vscode.ExtensionContext;
     private _disposables: vscode.Disposable[] = [];
@@ -20,10 +20,10 @@ export class AesPanel {
             (message) => {
                 switch (message.command) {
                     case 'encrypt':
-                        this._runCrypto('encryptResult', () => encrypt(message.text, message.key), 'Encryption');
+                        this._runCrypto('encryptResult', () => encrypt(message.text, message.key, message.options), 'Encryption');
                         return;
                     case 'decrypt':
-                        this._runCrypto('decryptResult', () => decrypt(message.text, message.key), 'Decryption');
+                        this._runCrypto('decryptResult', () => decrypt(message.text, message.key, message.options), 'Decryption');
                         return;
                 }
             },
@@ -34,14 +34,14 @@ export class AesPanel {
 
     public static render(context: vscode.ExtensionContext): void {
         const column = vscode.ViewColumn.One;
-        if (AesPanel.currentPanel) {
-            AesPanel.currentPanel._panel.reveal(column);
+        if (SecurePropertiesPanel.currentPanel) {
+            SecurePropertiesPanel.currentPanel._panel.reveal(column);
             return;
         }
 
         const panel = vscode.window.createWebviewPanel(
-            'aes.encryptDecrypt',
-            'MuleSoft AES Encrypt / Decrypt',
+            'secureProperties.encryptDecrypt',
+            'MuleSoft Secure Properties Encrypt / Decrypt',
             column,
             {
                 enableScripts: true,
@@ -49,8 +49,8 @@ export class AesPanel {
                 localResourceRoots: [context.extensionUri],
             }
         );
-        panel.iconPath = vscode.Uri.joinPath(context.extensionUri, 'resources', 'icons', 'aes.svg');
-        AesPanel.currentPanel = new AesPanel(panel, context);
+        panel.iconPath = vscode.Uri.joinPath(context.extensionUri, 'resources', 'icons', 'secure-properties.svg');
+        SecurePropertiesPanel.currentPanel = new SecurePropertiesPanel(panel, context);
     }
 
     public refreshKeyIdentifiers(): void {
@@ -58,7 +58,7 @@ export class AesPanel {
     }
 
     public dispose(): void {
-        AesPanel.currentPanel = undefined;
+        SecurePropertiesPanel.currentPanel = undefined;
         this._panel.dispose();
         while (this._disposables.length) {
             this._disposables.pop()?.dispose();
@@ -88,13 +88,19 @@ export class AesPanel {
         const keyIdentifiers = await getAesKeyIdentifiers(this._context);
         const firstKey = keyIdentifiers[0]?.key ?? '';
         const firstKeyMasked = this.maskKeyForDisplay(firstKey);
-        const headerIcon = iconUri(webview, this._context.extensionUri, 'aes.svg');
+        const headerIcon = iconUri(webview, this._context.extensionUri, 'secure-properties.svg');
         const keyIdentifierOptions = keyIdentifiers
             .map(
                 (keyIdentifier, index) =>
                     `<option value="${escapeHtml(keyIdentifier.key)}"${index === 0 ? ' selected' : ''}>${escapeHtml(keyIdentifier.keyIdentifier)}</option>`
             )
             .join('');
+        const algorithmOptions = SUPPORTED_ALGORITHMS.map(
+            (algorithm) => `<option value="${algorithm}"${algorithm === 'AES' ? ' selected' : ''}>${algorithm}</option>`
+        ).join('');
+        const modeOptions = SUPPORTED_MODES.map(
+            (mode) => `<option value="${mode}"${mode === 'CBC' ? ' selected' : ''}>${mode}</option>`
+        ).join('');
 
         this._panel.webview.html = `<!DOCTYPE html>
 <html lang="en">
@@ -102,7 +108,7 @@ export class AesPanel {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="${csp}">
-    <title>MuleSoft AES Encrypt / Decrypt</title>
+    <title>MuleSoft Secure Properties Encrypt / Decrypt</title>
     <style>
         body {
             padding: 20px;
@@ -118,6 +124,18 @@ export class AesPanel {
         }
         .header-icon { width: 32px; height: 32px; }
         .input-group { margin-bottom: 20px; }
+        .options-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+        .option-field { flex: 1; min-width: 140px; }
+        .option-field.checkbox-field {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 8px;
+        }
+        .option-field.checkbox-field label { margin-bottom: 0; }
+        .option-field.checkbox-field input[type="checkbox"] { width: auto; }
+        select:disabled, input:disabled { opacity: 0.5; cursor: not-allowed; }
         .key-row { display: flex; gap: 10px; align-items: flex-end; }
         .key-input { flex: 1; position: relative; }
         .key-input-wrapper { position: relative; display: flex; gap: 5px; }
@@ -206,12 +224,30 @@ export class AesPanel {
     <div class="container">
         <h2>
             <img class="header-icon" src="${headerIcon}" alt="" />
-            MuleSoft AES Encrypt / Decrypt
+            MuleSoft Secure Properties Encrypt / Decrypt
         </h2>
 
         <div class="info">
-            <strong>Note:</strong> This tool uses AES/CBC/PKCS5 encryption compatible with MuleSoft secure configuration properties.
-            Encrypted values are wrapped in ![...] format.
+            <strong>Note:</strong> This tool replicates the MuleSoft secure configuration properties generator.
+            Choose an algorithm, cipher mode (state) and whether to use random IVs. The defaults (AES / CBC, no random IV)
+            match the MuleSoft AES/CBC/PKCS5 behaviour. Encrypted values are wrapped in ![...] format.
+        </div>
+
+        <div class="input-group">
+            <div class="options-row">
+                <div class="option-field">
+                    <label for="algorithm">Algorithm:</label>
+                    <select id="algorithm">${algorithmOptions}</select>
+                </div>
+                <div class="option-field">
+                    <label for="mode">State (Mode):</label>
+                    <select id="mode">${modeOptions}</select>
+                </div>
+                <div class="option-field checkbox-field">
+                    <input type="checkbox" id="useRandomIv" />
+                    <label for="useRandomIv">Use Random IVs</label>
+                </div>
+            </div>
         </div>
 
         <div class="input-group">
@@ -264,6 +300,9 @@ export class AesPanel {
 
         const keyInput = document.getElementById('key');
         const keyIdentifierSelect = document.getElementById('keyIdentifier');
+        const algorithmSelect = document.getElementById('algorithm');
+        const modeSelect = document.getElementById('mode');
+        const randomIvCheckbox = document.getElementById('useRandomIv');
         const inputText = document.getElementById('input');
         const outputText = document.getElementById('output');
         const messageDiv = document.getElementById('message');
@@ -379,6 +418,21 @@ export class AesPanel {
             applyKeyIdentifierSelection(keyIdentifierSelect.value);
         });
 
+        // RCA (RC4) is a stream cipher: no mode and no IV. ECB mode uses no IV.
+        function updateOptionAvailability() {
+            const isStream = algorithmSelect.value === 'RCA';
+            modeSelect.disabled = isStream;
+            const noIv = isStream || modeSelect.value === 'ECB';
+            randomIvCheckbox.disabled = noIv;
+            if (noIv) {
+                randomIvCheckbox.checked = false;
+            }
+        }
+
+        algorithmSelect.addEventListener('change', updateOptionAvailability);
+        modeSelect.addEventListener('change', updateOptionAvailability);
+        updateOptionAvailability();
+
         function currentKey() {
             return isKeyVisible ? keyInput.value : actualKeyValue;
         }
@@ -394,7 +448,12 @@ export class AesPanel {
                 showError('Key must be at least 16 characters long');
                 return;
             }
-            vscode.postMessage({ command, key, text });
+            const options = {
+                algorithm: algorithmSelect.value,
+                mode: modeSelect.disabled ? 'CBC' : modeSelect.value,
+                useRandomIv: !randomIvCheckbox.disabled && randomIvCheckbox.checked,
+            };
+            vscode.postMessage({ command, key, text, options });
         }
 
         document.getElementById('encryptBtn').addEventListener('click', () => submit('encrypt'));
