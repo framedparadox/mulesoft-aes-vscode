@@ -1,8 +1,6 @@
 # MuleSoft AES & Secure Properties Encrypt / Decrypt
 
-![Version](https://img.shields.io/badge/version-0.0.1-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![VS Code](https://img.shields.io/badge/VS%20Code-1.105.0%2B-007ACC)
 
 A VS Code extension for encrypting and decrypting MuleSoft secure configuration
 properties directly inside your editor. It ships **three complementary tools**:
