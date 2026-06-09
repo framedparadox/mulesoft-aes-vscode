@@ -1,0 +1,38 @@
+name: Publish to VS Code Marketplace
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm run pretest
+
+      - name: Build VSIX package
+        run: npx vsce package --out mule-aes.vsix
+
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mule-aes-vsix
+          path: mule-aes.vsix
+
+      - name: Publish to VS Code Marketplace
+        run: npx vsce publish --packagePath mule-aes.vsix --pat ${{ secrets.VSCE_TOKEN }}

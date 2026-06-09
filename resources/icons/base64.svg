@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Base64">
+  <defs>
+    <linearGradient id="b64Grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#A78BFA"/>
+      <stop offset="1" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+  <!-- Background square -->
+  <rect x="32" y="32" width="448" height="448" fill="url(#b64Grad)"/>
+  <!-- Text "64" -->
+  <text x="256" y="320" font-family="Arial, Helvetica, sans-serif" font-size="200" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="-8">64</text>
+</svg>
