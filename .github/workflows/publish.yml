@@ -3,7 +3,7 @@ name: Publish to VS Code Marketplace
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   publish:
@@ -14,10 +14,26 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Verify VS Code Marketplace access
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
+        run: |
+          publisher="$(node -p "require('./package.json').publisher")"
+
+          if [ -z "${VSCE_PAT:-}" ]; then
+            echo "::error title=Missing VSCE_TOKEN::Add a GitHub Actions secret named VSCE_TOKEN with Marketplace (Manage) access for publisher ${publisher}."
+            exit 1
+          fi
+
+          if ! npx vsce verify-pat "${publisher}"; then
+            echo "::error title=Invalid VSCE_TOKEN::The VSCE_TOKEN secret cannot publish to publisher ${publisher}. Rotate it with a Personal Access Token created for All accessible organizations and Marketplace (Manage), using an account that has access to the ${publisher} publisher."
+            exit 1
+          fi
 
       - name: Run lint
         run: npm run lint
@@ -35,4 +51,6 @@ jobs:
           path: mule-aes.vsix
 
       - name: Publish to VS Code Marketplace
-        run: npx vsce publish --packagePath mule-aes.vsix --pat ${{ secrets.VSCE_TOKEN }}
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
+        run: npx vsce publish --packagePath mule-aes.vsix
