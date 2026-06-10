@@ -1,12 +1,15 @@
-name: Publish to VS Code Marketplace
+name: Build VSIX Package and Release
 
 on:
   push:
     tags:
       - "v*"
 
+permissions:
+  contents: write
+
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,21 +22,23 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Verify VS Code Marketplace access
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
-        run: |
-          publisher="$(node -p "require('./package.json').publisher")"
-
-          if [ -z "${VSCE_PAT:-}" ]; then
-            echo "::error title=Missing VSCE_TOKEN::Add a GitHub Actions secret named VSCE_TOKEN with Marketplace (Manage) access for publisher ${publisher}."
-            exit 1
-          fi
-
-          if ! npx vsce verify-pat "${publisher}"; then
-            echo "::error title=Invalid VSCE_TOKEN::The VSCE_TOKEN secret cannot publish to publisher ${publisher}. Rotate it with a Personal Access Token created for All accessible organizations and Marketplace (Manage), using an account that has access to the ${publisher} publisher."
-            exit 1
-          fi
+      # Marketplace publishing is disabled while this workflow only builds the
+      # VSIX artifact.
+      # - name: Verify VS Code Marketplace access
+      #   env:
+      #     VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
+      #   run: |
+      #     publisher="$(node -p "require('./package.json').publisher")"
+      #
+      #     if [ -z "${VSCE_PAT:-}" ]; then
+      #       echo "::error title=Missing VSCE_TOKEN::Add a GitHub Actions secret named VSCE_TOKEN with Marketplace (Manage) access for publisher ${publisher}."
+      #       exit 1
+      #     fi
+      #
+      #     if ! npx vsce verify-pat "${publisher}"; then
+      #       echo "::error title=Invalid VSCE_TOKEN::The VSCE_TOKEN secret cannot publish to publisher ${publisher}. Rotate it with a Personal Access Token created for All accessible organizations and Marketplace (Manage), using an account that has access to the ${publisher} publisher."
+      #       exit 1
+      #     fi
 
       - name: Run lint
         run: npm run lint
@@ -50,7 +55,22 @@ jobs:
           name: mule-aes-vsix
           path: mule-aes.vsix
 
-      - name: Publish to VS Code Marketplace
+      - name: Create GitHub release
         env:
-          VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
-        run: npx vsce publish --packagePath mule-aes.vsix
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          gh release create "${TAG_NAME}" mule-aes.vsix \
+            --repo "${GITHUB_REPOSITORY}" \
+            --title "${TAG_NAME}" \
+            --generate-notes \
+            --verify-tag
+
+      # - name: Publish to VS Code Marketplace
+      #   env:
+      #     VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
+      #   run: npx vsce publish --packagePath mule-aes.vsix
+
+      # - name: Publish to OpenVSX
+      #   run: npx ovsx publish mule-aes.vsix --pat ${{ secrets.OVSX_TOKEN }}
+      #   continue-on-error: true
