@@ -9,31 +9,32 @@ transmitted.
 
 The extension bundles three tools:
 
-| Tool | Purpose |
-|------|---------|
-| **MuleSoft AES Encrypt / Decrypt** | Focused AES/CBC workflow matching MuleSoft's most common setup. |
+| Tool                                    | Purpose                                                                   |
+| --------------------------------------- | ------------------------------------------------------------------------- |
+| **MuleSoft AES Encrypt / Decrypt**      | Focused AES/CBC workflow matching MuleSoft's most common setup.           |
 | **Secure Properties Encrypt / Decrypt** | Full generator parity: multiple algorithms, cipher modes, and random IVs. |
-| **Base64 Encode / Decode** | Quick text and file Base64 utility. |
+| **Base64 Encode / Decode**              | Quick text and file Base64 utility.                                       |
 
 ---
 
 ## Feature Summary
 
-| Tool | Algorithms | Modes | Random IV | Editor toolbar button |
-|------|------------|-------|-----------|-----------------------|
-| AES Encrypt / Decrypt | AES-128 / AES-256 | CBC | No (derived IV) | Yes (`.yaml`, `.yml`, `.properties`) |
-| Secure Properties Encrypt / Decrypt | AES, Blowfish, DES, DESede, RC2, RCA | CBC, CFB, ECB, OFB | Optional | No (sidebar / palette) |
-| Base64 Encode / Decode | — | — | — | No |
+| Tool                                | Algorithms                           | Modes              | Random IV       | Editor integration                                                         |
+| ----------------------------------- | ------------------------------------ | ------------------ | --------------- | -------------------------------------------------------------------------- |
+| AES Encrypt / Decrypt               | AES-128 / AES-256                    | CBC                | No (derived IV) | Toolbar, right-click, whole-file workflow (`.yaml`, `.yml`, `.properties`) |
+| Secure Properties Encrypt / Decrypt | AES, Blowfish, DES, DESede, RC2, RCA | CBC, CFB, ECB, OFB | Optional        | No (sidebar / palette)                                                     |
+| Base64 Encode / Decode              | —                                    | —                  | —               | No                                                                         |
 
-The two encryption tools are independent screens. The AES tool is the one wired
-into the YAML/properties editor toolbar; the Secure Properties tool is launched
-from the sidebar or Command Palette. With its defaults (AES / CBC / no random
-IV), the Secure Properties tool produces output that is byte-for-byte identical
-to the AES tool, so the two are interchangeable for standard values.
+The two encryption tools are independent screens. AES editor workflows are wired
+into YAML/properties files for in-place value updates and whole-file operations;
+the Secure Properties tool is launched from the sidebar or Command Palette. With
+its defaults (AES / CBC / no random IV), the Secure Properties tool produces
+output that is byte-for-byte identical to the AES tool, so the two are
+interchangeable for standard values.
 
 ---
 
-## Tool 1 — MuleSoft AES Encrypt / Decrypt
+## A. MuleSoft AES Encrypt / Decrypt
 
 The streamlined option for projects using MuleSoft's standard AES configuration.
 
@@ -46,68 +47,67 @@ The streamlined option for projects using MuleSoft's standard AES configuration.
   config files.
 - **Editor integration:** a toolbar button appears automatically when editing
   `.yaml`, `.yml`, and `.properties` files.
+- **Selection actions:** select a value, right-click, and encrypt or decrypt it
+  in place with a saved KeyIdentifier or one-off manual key.
+- **Whole-file workflow:** open the file workflow beside the editor to encrypt
+  selected plain fields or decrypt every secure value in the active file. Each
+  field row shows its name, value, and full path with line number, and the
+  KeyIdentifier dropdown shows a masked preview of the selected key — just like
+  the main AES screen.
 
-| Property | Value |
-|----------|-------|
-| Algorithm | AES-128-CBC or AES-256-CBC |
-| Block size | 128 bits |
-| Padding | PKCS5 |
-| IV | Derived from the first 16 characters of the key |
-| Output encoding | Base64, wrapped in `![ ... ]` |
+| Property        | Value                                           |
+| --------------- | ----------------------------------------------- |
+| Algorithm       | AES-128-CBC or AES-256-CBC                      |
+| Block size      | 128 bits                                        |
+| Padding         | PKCS5                                           |
+| IV              | Derived from the first 16 characters of the key |
+| Output encoding | Base64, wrapped in `![ ... ]`                   |
 
 ---
 
-## Tool 2 — Secure Properties Encrypt / Decrypt
+## B. Secure Properties Encrypt / Decrypt
 
-A dedicated screen that replicates the
-[MuleSoft Secure Properties generator](https://secure-properties-api.us-e1.cloudhub.io/).
-Use it when you need an algorithm or cipher mode other than AES/CBC, or random
-initialization vectors. It mirrors the AES layout with an additional options row:
+A flexible, full-featured encryption tool for MuleSoft secure properties that goes beyond the standard AES/CBC workflow. Use it when your configuration requires a different algorithm (such as Blowfish, DES, DESede, RC2, or RCA), a cipher mode other than CBC (CFB, ECB, or OFB), or the option to generate random initialization vectors for stronger, non-deterministic encryption.
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│ Algorithm ▼     State (Mode) ▼     ☐ Use Random IVs           │  ← options row
-├─────────────────────────────────────────────────────────────┤
-│ Encryption Key  [••••••••] 👁 💾    KeyIdentifier ▼           │
-├─────────────────────────────────────────────────────────────┤
-│ Input Text                                                    │
-├─────────────────────────────────────────────────────────────┤
-│ [ Encrypt ]  [ Decrypt ]  [ Clear ]                           │
-│ Output                                          [ Copy ]      │
-└─────────────────────────────────────────────────────────────┘
-```
+The interface follows the same clean layout as the AES tool, with an extra options row that lets you choose:
+
+- **Algorithm** — AES, Blowfish, DES, DESede, RC2, or RCA
+- **State (Mode)** — CBC, CFB, ECB, or OFB
+- **Use Random IVs** — on or off (disabled automatically for ECB and RCA, which do not use IVs)
+
+All output is produced in MuleSoft's standard secure properties format (`![base64String]`). When random IVs are enabled, the IV is prepended to the ciphertext so the resulting token remains self-contained and portable. With its defaults (AES / CBC / derived IV), the tool produces byte-for-byte identical results to the dedicated AES screen, so the two can be used interchangeably for common cases.
 
 ### Options
 
-| Control | Type | Choices | Default |
-|---------|------|---------|---------|
-| Algorithm | dropdown | AES, Blowfish, DES, DESede, RC2, RCA | AES |
-| State (Mode) | dropdown | CBC, CFB, ECB, OFB | CBC |
-| Use Random IVs | checkbox | on / off | off |
+| Control        | Type     | Choices                              | Default |
+| -------------- | -------- | ------------------------------------ | ------- |
+| Algorithm      | dropdown | AES, Blowfish, DES, DESede, RC2, RCA | AES     |
+| State (Mode)   | dropdown | CBC, CFB, ECB, OFB                   | CBC     |
+| Use Random IVs | checkbox | on / off                             | off     |
 
 ### Supported algorithms
 
-| Algorithm | Description | IV size | Key requirement |
-|-----------|-------------|---------|-----------------|
-| AES | Advanced Encryption Standard (default) | 16 bytes | 16 / 24 / 32 chars → AES-128 / 192 / 256 |
-| Blowfish | Bruce Schneier's block cipher | 8 bytes | ≥ 16 chars (up to 56 bytes used) |
-| DES | Data Encryption Standard (legacy) | 8 bytes | ≥ 16 chars (first 8 bytes used) |
-| DESede | Triple DES (3DES) | 8 bytes | ≥ 24 chars |
-| RC2 | Rivest Cipher 2 | 8 bytes | ≥ 16 chars |
-| RCA | RC4 / ARCFOUR stream cipher | none | ≥ 16 chars |
+| Algorithm | Description                            | IV size  | Key requirement                          |
+| --------- | -------------------------------------- | -------- | ---------------------------------------- |
+| AES       | Advanced Encryption Standard (default) | 16 bytes | 16 / 24 / 32 chars → AES-128 / 192 / 256 |
+| Blowfish  | Bruce Schneier's block cipher          | 8 bytes  | ≥ 16 chars (up to 56 bytes used)         |
+| DES       | Data Encryption Standard (legacy)      | 8 bytes  | ≥ 16 chars (first 8 bytes used)          |
+| DESede    | Triple DES (3DES)                      | 8 bytes  | ≥ 24 chars                               |
+| RC2       | Rivest Cipher 2                        | 8 bytes  | ≥ 16 chars                               |
+| RCA       | RC4 / ARCFOUR stream cipher            | none     | ≥ 16 chars                               |
 
 ### Cipher modes ("state")
 
-| Mode | Name | Uses an IV? |
-|------|------|-------------|
-| CBC | Cipher Block Chaining (default) | Yes |
-| CFB | Cipher Feedback | Yes |
-| ECB | Electronic Codebook | No |
-| OFB | Output Feedback | Yes |
+| Mode | Name                            | Uses an IV? |
+| ---- | ------------------------------- | ----------- |
+| CBC  | Cipher Block Chaining (default) | Yes         |
+| CFB  | Cipher Feedback                 | Yes         |
+| ECB  | Electronic Codebook             | No          |
+| OFB  | Output Feedback                 | Yes         |
 
 ### Initialization Vectors
 
-- **Derived IV (default):** the IV is the first *N* characters of the key (`N` =
+- **Derived IV (default):** the IV is the first _N_ characters of the key (`N` =
   the algorithm's IV size — 16 for AES, 8 for the others). Encryption is
   deterministic, matching the AES tool's behaviour.
 - **Random IV (checkbox on):** a cryptographically random IV is generated per
@@ -143,7 +143,7 @@ payload (inside the wrapper), keeping the value a single self-contained token.
 
 ---
 
-## Tool 3 — Base64 Encode / Decode
+## C. Base64 Encode / Decode
 
 - Encode plain text or files to Base64.
 - Decode Base64 strings back to plain text.
@@ -200,22 +200,51 @@ and reopening the panel.
    algorithm/mode/IV settings), then click **Encrypt** or **Decrypt**.
 5. Use **Copy to Clipboard** to grab the result.
 
+**Use in a YAML or properties editor**
+
+1. Open a `.yaml`, `.yml`, or `.properties` file.
+2. Select a value and right-click **MuleSoft AES: Encrypt Selection** or
+   **MuleSoft AES: Decrypt Selection** to update only that selection.
+3. Use the AES toolbar dropdown for selection actions, or click
+   **MuleSoft AES: Encrypt / Decrypt File** to open the editor-side file
+   workflow.
+4. In the file workflow, choose a KeyIdentifier (its key shows masked, as on
+   the main AES screen) or input a key manually. Encrypt mode lets you
+   multi-select plain fields; decrypt mode automatically targets all complete
+   `![ ... ]` secure values. Each field row lists its name on the left and its
+   value plus full path/line number on the right.
+
 ---
 
 ## Usage Examples
 
-**Encrypt a database password (AES tool)**
+**Encrypt a selected database password**
 
 1. Open `application.yaml`.
-2. Click the AES button in the editor toolbar, or open the AES tool from the
-   sidebar.
-3. Enter `myDatabasePassword`, select KeyIdentifier `PROD`, and click
-   **Encrypt**.
-4. Paste the result into your YAML:
+2. Select `myDatabasePassword`, right-click, and choose
+   **MuleSoft AES: Encrypt Selection**.
+3. Select KeyIdentifier `PROD`, or input the key manually.
+4. The selected value is replaced in place:
    ```yaml
    db:
-     password: ![EncryptedValueHere]
+     password: ! [EncryptedValueHere]
    ```
+
+**Encrypt multiple values in a file**
+
+1. Open `application.yaml` or `application.properties`.
+2. Click **MuleSoft AES: Encrypt / Decrypt File** in the editor toolbar.
+3. Keep **Encrypt** selected, choose a KeyIdentifier or input a key, and select
+   the fields you want to encrypt.
+4. Click **Encrypt selected values** to apply all replacements in one edit.
+
+**Decrypt all secure values in a file**
+
+1. Open the file workflow beside a YAML or properties editor.
+2. Switch to **Decrypt**.
+3. Choose the same KeyIdentifier or manual key used for encryption.
+4. Click **Decrypt all secure values** to replace every detected `![ ... ]`
+   value in one edit.
 
 **Encrypt with a non-default algorithm (Secure Properties tool)**
 
@@ -238,15 +267,21 @@ and reopening the panel.
 
 ## Commands
 
-| Command | Title | Where |
-|---------|-------|-------|
-| `aes.encryptDecrypt` | MuleSoft AES Encrypt / Decrypt | Sidebar, editor toolbar, palette |
-| `aesEnhanced.encryptDecrypt` | MuleSoft Secure Properties Encrypt / Decrypt | Sidebar, palette |
-| `base64.encodeDecode` | Base64 Encode / Decode | Sidebar, palette |
-| `aes.openSettings` | MuleSoft AES: Settings | Sidebar |
+| Command                      | Title                                        | Where                        |
+| ---------------------------- | -------------------------------------------- | ---------------------------- |
+| `aes.encryptDecrypt`         | MuleSoft AES Encrypt / Decrypt               | Sidebar, palette             |
+| `aes.editorActions`          | MuleSoft AES: Selection Actions              | Editor toolbar               |
+| `aes.encryptSelection`       | MuleSoft AES: Encrypt Selection              | Editor context menu, palette |
+| `aes.decryptSelection`       | MuleSoft AES: Decrypt Selection              | Editor context menu, palette |
+| `aes.fileEncryptDecrypt`     | MuleSoft AES: Encrypt / Decrypt File         | Editor toolbar, palette      |
+| `aesEnhanced.encryptDecrypt` | MuleSoft Secure Properties Encrypt / Decrypt | Sidebar, palette             |
+| `base64.encodeDecode`        | Base64 Encode / Decode                       | Sidebar, palette             |
+| `aes.openSettings`           | MuleSoft AES: Settings                       | Sidebar                      |
 
 The AES editor toolbar button appears for `.yaml`, `.yml`, and `.properties`
-files. The Secure Properties tool has no editor button by design.
+files. The selection commands also appear in the editor context menu when text is
+selected in those file types. The Secure Properties tool has no editor button by
+design.
 
 ---
 
@@ -295,9 +330,13 @@ when **Use Random IVs** is checked; uncheck it for deterministic output.
 **An encryption key is not saving.** Confirm VS Code can access secret storage,
 then restart VS Code.
 
-**The AES button does not appear in the editor.** It only shows for `.yaml`,
-`.yml`, and `.properties` files. The Secure Properties tool has no editor button
-by design — open it from the sidebar.
+**The AES editor buttons do not appear.** They only show for `.yaml`, `.yml`,
+and `.properties` files. The Secure Properties tool has no editor button by
+design — open it from the sidebar.
+
+**No fields appear in the file workflow.** Encrypt mode lists plain scalar
+values that are not already wrapped in `![ ... ]`. Decrypt mode lists complete
+secure values only.
 
 ---
 
