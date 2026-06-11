@@ -1,6 +1,6 @@
 {
   "name": "mule-aes",
-  "displayName": "Mulesoft AES Encrypt / Decrypt",
+  "displayName": "MuleSoft AES Encrypt / Decrypt",
   "description": "Encrypt and decrypt text using MuleSoft AES-256 / Secure Properties format. Also includes Base64 encoding and decoding tools.",
   "version": "0.0.5",
   "publisher": "framedparadox",
@@ -9,6 +9,8 @@
   "keywords": [
     "mulesoft",
     "aes",
+    "secure properties",
+    "mulesoft secure properties",
     "encrypt",
     "decrypt",
     "base64"
