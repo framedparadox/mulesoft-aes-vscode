@@ -1,8 +1,8 @@
 {
   "name": "mule-aes",
-  "displayName": "MuleSoft AES Encrypt / Decrypt",
+  "displayName": "MuleSoft Secure AES Encrypt / Decrypt",
   "description": "Encrypt and decrypt text using MuleSoft AES-256 / Secure Properties format. Also includes Base64 encoding and decoding tools.",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "publisher": "framedparadox",
   "license": "MIT",
   "icon": "resources/icon.png",
@@ -32,6 +32,24 @@
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "muleAes",
+          "title": "MuleSoft AES",
+          "icon": "resources/icons/activitybar.svg"
+        }
+      ]
+    },
+    "views": {
+      "muleAes": [
+        {
+          "id": "muleAes.sidebar",
+          "name": "MuleSoft AES",
+          "type": "webview"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "aes.encryptDecrypt",

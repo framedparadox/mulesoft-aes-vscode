@@ -16,6 +16,7 @@ import {
   escapeHtml,
   iconUri,
 } from "./webviewUtils";
+import { SIDEBAR_FOCUS_COMMAND } from "./sidebarProvider";
 
 interface ApplyMessage {
   command: "apply";
@@ -29,7 +30,11 @@ interface RefreshMessage {
   operation: FileCryptoOperation;
 }
 
-type PanelMessage = ApplyMessage | RefreshMessage;
+interface OpenSidebarMessage {
+  command: "openSidebar";
+}
+
+type PanelMessage = ApplyMessage | RefreshMessage | OpenSidebarMessage;
 
 interface FieldViewModel {
   id: string;
@@ -61,6 +66,10 @@ export class FileCryptoPanel {
 
     this._panel.webview.onDidReceiveMessage(
       (message: PanelMessage) => {
+        if (message.command === "openSidebar") {
+          void vscode.commands.executeCommand(SIDEBAR_FOCUS_COMMAND);
+          return;
+        }
         if (message.command === "refreshFields") {
           void this._postFields(message.operation);
           return;
@@ -187,6 +196,27 @@ export class FileCryptoPanel {
             font-size: 16px;
             line-height: 1.3;
             margin: 0;
+        }
+        .open-ext-btn {
+            margin-left: auto;
+            padding: 6px 8px;
+            background: var(--vscode-button-secondaryBackground);
+            color: var(--vscode-button-secondaryForeground);
+            border: 1px solid var(--vscode-input-border);
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .open-ext-btn:hover {
+            background: var(--vscode-button-secondaryHoverBackground);
+        }
+        .open-ext-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
         }
         label {
             display: block;
@@ -322,6 +352,11 @@ export class FileCryptoPanel {
         <div class="header">
             <img src="${headerIcon}" alt="" />
             <h2>MuleSoft AES File Encrypt / Decrypt</h2>
+            <button type="button" id="openExtensionBtn" class="open-ext-btn" title="Open MuleSoft AES in the sidebar">
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M1.5 2h13A1.5 1.5 0 0 1 16 3.5v9A1.5 1.5 0 0 1 14.5 14h-13A1.5 1.5 0 0 1 0 12.5v-9A1.5 1.5 0 0 1 1.5 2zM6 3H1.5a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5H6V3zm1 0v10h7.5a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5H7z"/>
+                </svg>
+            </button>
         </div>
 
         <div>
@@ -388,6 +423,7 @@ export class FileCryptoPanel {
         const fieldsLabel = document.getElementById('fieldsLabel');
         const emptyState = document.getElementById('emptyState');
         const applyBtn = document.getElementById('applyBtn');
+        const openExtensionBtn = document.getElementById('openExtensionBtn');
         const message = document.getElementById('message');
 
         function setOperation(nextOperation) {
@@ -583,6 +619,9 @@ export class FileCryptoPanel {
         document.getElementById('refreshBtn').addEventListener('click', () => {
             showInfo('Refreshing fields...');
             vscode.postMessage({ command: 'refreshFields', operation });
+        });
+        openExtensionBtn.addEventListener('click', () => {
+            vscode.postMessage({ command: 'openSidebar' });
         });
         applyBtn.addEventListener('click', () => {
             showInfo(operation === 'encrypt' ? 'Encrypting selected values...' : 'Decrypting secure values...');

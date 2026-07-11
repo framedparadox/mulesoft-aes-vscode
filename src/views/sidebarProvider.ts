@@ -13,6 +13,12 @@ interface SidebarItem {
 
 export type SidebarMode = 'tools' | 'editorCrypto';
 
+/** View id of the activity-bar webview (must match the `views` contribution in package.json). */
+export const SIDEBAR_VIEW_ID = 'muleAes.sidebar';
+
+/** Command that reveals and focuses the activity-bar view (auto-registered by VS Code from the view id). */
+export const SIDEBAR_FOCUS_COMMAND = `${SIDEBAR_VIEW_ID}.focus`;
+
 const TOOLS: SidebarItem[] = [
     {
         label: 'MuleSoft AES Encrypt / Decrypt',
