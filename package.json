@@ -37,7 +37,7 @@
         {
           "id": "muleAes",
           "title": "MuleSoft AES",
-          "icon": "resources/icons/activitybar.svg"
+          "icon": "resources/icons/mule-secure.svg"
         }
       ]
     },
