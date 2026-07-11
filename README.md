@@ -39,8 +39,10 @@ interchangeable for standard values.
 The streamlined option for projects using MuleSoft's standard AES configuration.
 
 - **MuleSoft compatible:** AES-128-CBC or AES-256-CBC with PKCS5 padding.
-- **Key-driven strength:** a 16-character key selects AES-128; a 32-character
-  key selects AES-256.
+- **Key-driven strength:** a key of exactly 32 characters selects AES-256; any
+  other key (including 16- or 24-character keys) uses AES-128. This tool only
+  ever produces AES-128 or AES-256 — there is no AES-192 mode here. If you need
+  true AES-192, use the **Secure Properties** tool instead (see below).
 - **Derived IV:** taken from the first 16 characters of the key, so encryption
   is deterministic — identical input always yields identical output.
 - **Output format:** `![base64EncodedString]`, ready to paste into MuleSoft
@@ -50,10 +52,13 @@ The streamlined option for projects using MuleSoft's standard AES configuration.
 - **Selection actions:** select a value, right-click, and encrypt or decrypt it
   in place with a saved KeyIdentifier or one-off manual key.
 - **Whole-file workflow:** open the file workflow beside the editor to encrypt
-  selected plain fields or decrypt every secure value in the active file. Each
-  field row shows its name, value, and full path with line number, and the
-  KeyIdentifier dropdown shows a masked preview of the selected key — just like
-  the main AES screen.
+  selected plain fields or decrypt every secure value in the active file.
+  **Select all** / **Clear** buttons adjust the encrypt-mode selection, and a
+  **Refresh** button re-scans the file for changes made outside the panel. Each
+  field row shows its name, value (truncated past 120 characters), and full
+  path with line number, and the KeyIdentifier dropdown shows a masked preview
+  of the selected key — just like the main AES screen. A header button jumps
+  back to the sidebar.
 
 | Property        | Value                                           |
 | --------------- | ----------------------------------------------- |
@@ -87,14 +92,23 @@ All output is produced in MuleSoft's standard secure properties format (`![base6
 
 ### Supported algorithms
 
-| Algorithm | Description                            | IV size  | Key requirement                          |
-| --------- | -------------------------------------- | -------- | ---------------------------------------- |
-| AES       | Advanced Encryption Standard (default) | 16 bytes | 16 / 24 / 32 chars → AES-128 / 192 / 256 |
-| Blowfish  | Bruce Schneier's block cipher          | 8 bytes  | ≥ 16 chars (up to 56 bytes used)         |
-| DES       | Data Encryption Standard (legacy)      | 8 bytes  | ≥ 16 chars (first 8 bytes used)          |
-| DESede    | Triple DES (3DES)                      | 8 bytes  | ≥ 24 chars                               |
-| RC2       | Rivest Cipher 2                        | 8 bytes  | ≥ 16 chars                               |
-| RCA       | RC4 / ARCFOUR stream cipher            | none     | ≥ 16 chars                               |
+Every algorithm shares one blanket floor enforced by the UI: **keys must be at
+least 16 characters**, regardless of what the cipher itself needs. Some
+ciphers only actually consume a prefix of that key (noted below); the rest is
+simply ignored.
+
+| Algorithm | Description                            | IV size  | Key requirement                                |
+| --------- | -------------------------------------- | -------- | ----------------------------------------------- |
+| AES       | Advanced Encryption Standard (default) | 16 bytes | 16 / 24 / 32 chars → AES-128 / 192 / 256         |
+| Blowfish  | Bruce Schneier's block cipher          | 8 bytes  | ≥ 16 chars required by the UI (up to 56 bytes used) |
+| DES       | Data Encryption Standard (legacy)      | 8 bytes  | ≥ 16 chars required by the UI (only first 8 bytes used) |
+| DESede    | Triple DES (3DES)                      | 8 bytes  | ≥ 24 chars                                       |
+| RC2       | Rivest Cipher 2                        | 8 bytes  | ≥ 16 chars                                       |
+| RCA       | RC4 / ARCFOUR stream cipher            | none     | ≥ 16 chars                                       |
+
+Note: unlike the Secure Properties tool, the standalone **AES Encrypt /
+Decrypt** tool (section A) does not support AES-192 — a 24-character key there
+still resolves to AES-128, using only its first 16 bytes.
 
 ### Cipher modes ("state")
 
@@ -148,6 +162,9 @@ payload (inside the wrapper), keeping the value a single self-contained token.
 - Encode plain text or files to Base64.
 - Decode Base64 strings back to plain text.
 - Drag and drop or browse for files; copy results to the clipboard.
+- In file mode, **Decode** reads from the output box (where the encoded
+  Base64 was produced or pasted), not the file-drop input — paste or edit the
+  Base64 string there before decoding.
 
 ---
 
@@ -166,12 +183,19 @@ Selecting a KeyIdentifier from the dropdown fills in (and masks) its key.
 Choosing **Custom** lets you type a one-off key. Changes saved in **Settings**
 refresh any open encryption panels automatically.
 
+Once a KeyIdentifier is selected, the key field shows a masked preview and is
+locked to that value. Typing a character, pressing Backspace/Delete, or
+pasting into the field automatically switches the dropdown back to **Custom**
+and clears the field so you can enter a one-off key — you don't need to
+explicitly reselect "Custom" first.
+
 ### Save a key from the encrypt screen
 
 When you type a custom key, a **save** button (disk icon) appears between the
 show/hide toggle and the KeyIdentifier dropdown. Click it to open a dialog,
 enter a **Key Identifier** name, and save — the key is stored in secret storage
-and immediately added to the dropdown on both encryption screens.
+and immediately added to the dropdown on both encryption screens. In the save
+dialog, press **Enter** to confirm or **Esc** to cancel.
 
 ### Refresh keys
 
@@ -205,14 +229,16 @@ and reopening the panel.
 1. Open a `.yaml`, `.yml`, or `.properties` file.
 2. Select a value and right-click **MuleSoft AES: Encrypt Selection** or
    **MuleSoft AES: Decrypt Selection** to update only that selection.
-3. Use the AES toolbar dropdown for selection actions, or click
-   **MuleSoft AES: Encrypt / Decrypt File** to open the editor-side file
-   workflow.
+3. Or click the **MuleSoft AES: Encrypt / Decrypt File** button in the editor
+   toolbar to open the whole-file workflow panel beside the editor.
 4. In the file workflow, choose a KeyIdentifier (its key shows masked, as on
    the main AES screen) or input a key manually. Encrypt mode lets you
-   multi-select plain fields; decrypt mode automatically targets all complete
-   `![ ... ]` secure values. Each field row lists its name on the left and its
-   value plus full path/line number on the right.
+   multi-select plain fields, with **Select all** / **Clear** buttons to adjust
+   the selection and a **Refresh** button to re-scan the file; decrypt mode
+   automatically targets all complete `![ ... ]` secure values. Each field row
+   lists its name on the left and its value (truncated past 120 characters)
+   plus full path/line number on the right. An icon button in the panel header
+   jumps back to the sidebar.
 
 ---
 
@@ -267,21 +293,23 @@ and reopening the panel.
 
 ## Commands
 
-| Command                      | Title                                        | Where                        |
-| ---------------------------- | -------------------------------------------- | ---------------------------- |
-| `aes.encryptDecrypt`         | MuleSoft AES Encrypt / Decrypt               | Sidebar, palette             |
-| `aes.editorActions`          | MuleSoft AES: Selection Actions              | Editor toolbar               |
-| `aes.encryptSelection`       | MuleSoft AES: Encrypt Selection              | Editor context menu, palette |
-| `aes.decryptSelection`       | MuleSoft AES: Decrypt Selection              | Editor context menu, palette |
-| `aes.fileEncryptDecrypt`     | MuleSoft AES: Encrypt / Decrypt File         | Editor toolbar, palette      |
-| `aesEnhanced.encryptDecrypt` | MuleSoft Secure Properties Encrypt / Decrypt | Sidebar, palette             |
-| `base64.encodeDecode`        | Base64 Encode / Decode                       | Sidebar, palette             |
-| `aes.openSettings`           | MuleSoft AES: Settings                       | Sidebar                      |
+| Command                      | Title                                        | Where                         |
+| ----------------------------- | --------------------------------------------- | ------------------------------ |
+| `aes.encryptDecrypt`         | MuleSoft AES Encrypt / Decrypt               | Sidebar, palette               |
+| `aes.encryptSelection`       | MuleSoft AES: Encrypt Selection              | Editor context menu, palette   |
+| `aes.decryptSelection`       | MuleSoft AES: Decrypt Selection              | Editor context menu, palette   |
+| `aes.fileEncryptDecrypt`     | MuleSoft AES: Encrypt / Decrypt File         | Editor toolbar, palette        |
+| `aesEnhanced.encryptDecrypt` | MuleSoft Secure Properties Encrypt / Decrypt | Sidebar, palette               |
+| `base64.encodeDecode`        | Base64 Encode / Decode                       | Sidebar, palette               |
+| `aes.openSettings`           | MuleSoft AES: Settings                       | Sidebar                        |
 
-The AES editor toolbar button appears for `.yaml`, `.yml`, and `.properties`
-files. The selection commands also appear in the editor context menu when text is
-selected in those file types. The Secure Properties tool has no editor button by
-design.
+`aes.fileEncryptDecrypt` is the only editor-toolbar entry. It appears for
+`.yaml`, `.yml`, and `.properties` files and opens the whole-file workflow panel
+beside the editor. `aes.encryptSelection` and `aes.decryptSelection` appear only
+in the editor context menu, and only when text is selected in those same file
+types — there is no separate "selection actions" toolbar command. The Secure
+Properties tool has no editor toolbar button or context menu entry by design;
+open it from the sidebar or Command Palette.
 
 ---
 
@@ -353,5 +381,6 @@ Licensed under the [MIT License](LICENSE).
 
 - **Repository:** [framedparadox/mulesoft-aes-vscode](https://github.com/framedparadox/mulesoft-aes-vscode)
 - **Issues:** [Report a bug](https://github.com/framedparadox/mulesoft-aes-vscode/issues)
+- **Changelog:** [CHANGELOG.md](CHANGELOG.md)
 - **MuleSoft docs:** [Secure Configuration Properties](https://docs.mulesoft.com/mule-runtime/latest/secure-configuration-properties)
 - **Reference tool:** [Secure Properties generator](https://secure-properties-api.us-e1.cloudhub.io/)
