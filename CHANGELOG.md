@@ -14,6 +14,13 @@ version `0.0.6`, but no `v0.0.6` tag has been cut yet.
 
 ### Added
 
+- **KeyIdentifier drag-to-reorder** in Settings: drag the handle on each row to
+  change the order of KeyIdentifiers. Saved order is used by KeyIdentifier
+  dropdowns across AES tools. (`src/views/settingsPanel.ts`)
+- **Editor toolbar button for the main AES screen** (`aes.encryptDecrypt`) on
+  `.yaml`, `.yml`, and `.properties` files, alongside the existing whole-file
+  workflow button (`aes.fileEncryptDecrypt`). Uses the `mule-secure.svg` icon
+  so the two toolbar entries are easy to tell apart.
 - **"Open in sidebar" button** on the whole-file encrypt/decrypt panel
   (`aes.fileEncryptDecrypt`). A new icon button next to the panel title sends
   an `openSidebar` message that focuses and reveals the MuleSoft AES
@@ -29,6 +36,8 @@ version `0.0.6`, but no `v0.0.6` tag has been cut yet.
 - Bumped extension version to `0.0.6` in `package.json`.
 - Reworked the icon path handling in `package.json` and refined the
   `mule-secure.svg` markup/structure.
+- `aes.encryptDecrypt` command icon now uses `mule-secure.svg` (palette and
+  editor toolbar).
 
 ---
 

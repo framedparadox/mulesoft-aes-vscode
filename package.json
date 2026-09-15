@@ -54,7 +54,7 @@
       {
         "command": "aes.encryptDecrypt",
         "title": "MuleSoft AES Encrypt / Decrypt",
-        "icon": "resources/icons/aes.svg"
+        "icon": "resources/icons/mule-secure.svg"
       },
       {
         "command": "aesEnhanced.encryptDecrypt",
@@ -90,9 +90,14 @@
     "menus": {
       "editor/title": [
         {
-          "command": "aes.fileEncryptDecrypt",
+          "command": "aes.encryptDecrypt",
           "when": "resourceLangId == yaml || resourceExtname == .properties",
           "group": "navigation@1"
+        },
+        {
+          "command": "aes.fileEncryptDecrypt",
+          "when": "resourceLangId == yaml || resourceExtname == .properties",
+          "group": "navigation@2"
         }
       ],
       "editor/context": [

@@ -8,7 +8,10 @@ import {
 import { contentSecurityPolicy, createNonce, iconUri } from './webviewUtils';
 
 const EYE_SVG =
-    '<svg class="icon-show" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 3C4.5 3 1.5 5.5 0 8c1.5 2.5 4.5 5 8 5s6.5-2.5 8-5c-1.5-2.5-4.5-5-8-5zm0 8.5A3.5 3.5 0 1 1 8 4.5a3.5 3.5 0 0 1 0 7zm0-5.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg><svg class="icon-hide" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2.05 2.05a.5.5 0 0 1 .7 0l11.2 11.2a.5.5 0 0 1-.7.7l-2.06-2.05A8.7 8.7 0 0 1 8 13c-3.5 0-6.5-2.5-8-5 .8-1.33 2.06-2.84 3.7-3.94L2.05 2.76a.5.5 0 0 1 0-.71zM4.43 5.14C3.13 6 2.07 7.13 1.4 8c1.1 1.45 3.4 3.5 6.6 3.5.95 0 1.83-.18 2.62-.48l-1.4-1.4a2.5 2.5 0 0 1-3.34-3.34L4.43 5.14zM8 3c-.6 0-1.18.07-1.73.2l1.16 1.16A2.5 2.5 0 0 1 10.64 7.57l1.85 1.85C13.6 8.55 14.4 7.6 14.6 7c-1.1-1.45-3.4-3.5-6.6-3.5z"/></svg>';
+    '<svg class="icon-show" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 3C4.5 3 1.5 5.5 0 8c1.5 2.5 4.5 5 8 5s6.5-2.5 8-5c-1.5-2.5-4.5-5-8-5zm0 8.5A3.5 3.5 0 1 1 8 4.5a3.5 3.5 0 0 1 0 7zm0-5.5a2 2 0 1 0 0 4 2 0 0 0 0-4z"/></svg><svg class="icon-hide" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2.05 2.05a.5.5 0 0 1 .7 0l11.2 11.2a.5.5 0 0 1-.7.7l-2.06-2.05A8.7 8.7 0 0 1 8 13c-3.5 0-6.5-2.5-8-5 .8-1.33 2.06-2.84 3.7-3.94L2.05 2.76a.5.5 0 0 1 0-.71zM4.43 5.14C3.13 6 2.07 7.13 1.4 8c1.1 1.45 3.4 3.5 6.6 3.5.95 0 1.83-.18 2.62-.48l-1.4-1.4a2.5 2.5 0 0 1-3.34-3.34L4.43 5.14zM8 3c-.6 0-1.18.07-1.73.2l1.16 1.16A2.5 2.5 0 0 1 10.64 7.57l1.85 1.85C13.6 8.55 14.4 7.6 14.6 7c-1.1-1.45-3.4-3.5-6.6-3.5z"/></svg>';
+
+const DRAG_HANDLE_SVG =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5 3.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm0 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm0 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm6-9a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm0 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm0 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>';
 
 /** Settings panel for managing AES key identifiers. */
 export class SettingsPanel {
@@ -83,7 +86,10 @@ export class SettingsPanel {
 
         const aesRows = aesKeyIdentifiers
             .map(
-                (keyIdentifier) => `<tr>
+                (keyIdentifier) => `<tr draggable="true">
+            <td class="drag-cell">
+                <button type="button" class="drag-handle" title="Drag to reorder" aria-label="Drag to reorder">${DRAG_HANDLE_SVG}</button>
+            </td>
             <td>
                 <input type="text" class="keyidentifier-name" value="${escapeAttr(keyIdentifier.keyIdentifier)}" placeholder="KeyIdentifier" />
             </td>
@@ -140,8 +146,9 @@ export class SettingsPanel {
     }
     .card-title-icon { width: 16px; height: 16px; }
     .aes-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-    .aes-table thead th:nth-child(1) { width: 180px; }
-    .aes-table thead th:nth-child(3) { width: 96px; text-align: center; }
+    .aes-table thead th:nth-child(1) { width: 40px; text-align: center; }
+    .aes-table thead th:nth-child(2) { width: 180px; }
+    .aes-table thead th:nth-child(4) { width: 96px; text-align: center; }
     .aes-table thead th {
         text-align: left;
         font-size: 0.8em;
@@ -157,6 +164,27 @@ export class SettingsPanel {
     }
     .aes-table td:last-child { text-align: center; }
     .aes-table tr:last-child td { border-bottom: none; }
+    .aes-table tr.dragging { opacity: 0.45; }
+    .aes-table tr.drag-over-above td { box-shadow: inset 0 2px 0 0 var(--vscode-focusBorder); }
+    .aes-table tr.drag-over-below td { box-shadow: inset 0 -2px 0 0 var(--vscode-focusBorder); }
+    .drag-cell { width: 40px; text-align: center; padding-left: 4px; padding-right: 4px; }
+    .drag-handle {
+        padding: 4px 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        color: var(--vscode-descriptionForeground);
+        border: 1px solid transparent;
+        border-radius: 6px;
+        cursor: grab;
+    }
+    .drag-handle:hover {
+        background: var(--vscode-button-secondaryBackground);
+        color: var(--vscode-button-secondaryForeground);
+        border-color: var(--vscode-input-border);
+    }
+    .drag-handle:active { cursor: grabbing; }
     .key-wrapper { display: flex; gap: 6px; align-items: center; }
     .key-wrapper input { flex: 1; }
     .table-actions { width: 90px; text-align: center; }
@@ -231,10 +259,12 @@ export class SettingsPanel {
         </div>
         <p class="local-note">
             KeyIdentifier names and encryption keys are stored locally ONLY in VS Code secret storage on this machine.
+            Drag the handle on the left to change the order used in KeyIdentifier dropdowns.
         </p>
         <table class="aes-table">
             <thead>
                 <tr>
+                    <th aria-label="Reorder"></th>
                     <th>KeyIdentifier</th>
                     <th>Encryption Key</th>
                     <th>Action</th>
@@ -256,7 +286,15 @@ export class SettingsPanel {
 <script nonce="${nonce}">
     const vscode = acquireVsCodeApi();
     const eyeSvg = ${JSON.stringify(EYE_SVG)};
+    const dragHandleSvg = ${JSON.stringify(DRAG_HANDLE_SVG)};
     const keyIdentifierTable = document.getElementById('keyIdentifierTable');
+    let dragRow = null;
+
+    function clearDragOverClasses() {
+        Array.from(keyIdentifierTable.querySelectorAll('tr')).forEach((row) => {
+            row.classList.remove('drag-over-above', 'drag-over-below');
+        });
+    }
 
     function attachRowListeners(row) {
         row.querySelector('.del-btn').addEventListener('click', () => row.remove());
@@ -270,11 +308,67 @@ export class SettingsPanel {
             eyeBtn.setAttribute('aria-label', label);
             eyeBtn.setAttribute('title', label);
         });
+
+        row.addEventListener('dragstart', (e) => {
+            const target = e.target;
+            if (target && target.closest && (target.closest('input') || target.closest('.eye-btn') || target.closest('.del-btn'))) {
+                e.preventDefault();
+                return;
+            }
+            dragRow = row;
+            row.classList.add('dragging');
+            if (e.dataTransfer) {
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', 'reorder');
+            }
+        });
+
+        row.addEventListener('dragend', () => {
+            row.classList.remove('dragging');
+            clearDragOverClasses();
+            dragRow = null;
+        });
+
+        row.addEventListener('dragover', (e) => {
+            if (!dragRow || dragRow === row) {
+                return;
+            }
+            e.preventDefault();
+            const rect = row.getBoundingClientRect();
+            const before = e.clientY < rect.top + rect.height / 2;
+            clearDragOverClasses();
+            row.classList.add(before ? 'drag-over-above' : 'drag-over-below');
+            if (e.dataTransfer) {
+                e.dataTransfer.dropEffect = 'move';
+            }
+        });
+
+        row.addEventListener('dragleave', () => {
+            row.classList.remove('drag-over-above', 'drag-over-below');
+        });
+
+        row.addEventListener('drop', (e) => {
+            e.preventDefault();
+            if (!dragRow || dragRow === row) {
+                clearDragOverClasses();
+                return;
+            }
+            const rect = row.getBoundingClientRect();
+            const before = e.clientY < rect.top + rect.height / 2;
+            if (before) {
+                keyIdentifierTable.insertBefore(dragRow, row);
+            } else {
+                keyIdentifierTable.insertBefore(dragRow, row.nextSibling);
+            }
+            clearDragOverClasses();
+        });
     }
 
     function addRow(keyIdentifier, key) {
         const row = document.createElement('tr');
+        row.draggable = true;
         row.innerHTML =
+            '<td class="drag-cell"><button type="button" class="drag-handle" title="Drag to reorder" aria-label="Drag to reorder">' + dragHandleSvg + '</button></td>' +
             '<td><input type="text" class="keyidentifier-name" placeholder="KeyIdentifier" /></td>' +
             '<td><div class="key-wrapper"><input type="password" class="keyidentifier-key" placeholder="Encryption key (min 16 chars)" />' +
             '<button type="button" class="eye-btn" title="Show key" aria-label="Show key" aria-pressed="false">' + eyeSvg + '</button></div></td>' +

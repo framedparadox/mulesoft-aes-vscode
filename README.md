@@ -47,8 +47,9 @@ The streamlined option for projects using MuleSoft's standard AES configuration.
   is deterministic — identical input always yields identical output.
 - **Output format:** `![base64EncodedString]`, ready to paste into MuleSoft
   config files.
-- **Editor integration:** a toolbar button appears automatically when editing
-  `.yaml`, `.yml`, and `.properties` files.
+- **Editor integration:** toolbar buttons appear automatically when editing
+  `.yaml`, `.yml`, and `.properties` files — one opens the main MuleSoft AES
+  Encrypt / Decrypt screen, and another opens the whole-file workflow.
 - **Selection actions:** select a value, right-click, and encrypt or decrypt it
   in place with a saved KeyIdentifier or one-off manual key.
 - **Whole-file workflow:** open the file workflow beside the editor to encrypt
@@ -174,7 +175,8 @@ Both encryption tools draw from the same set of **KeyIdentifiers**, managed from
 the **Settings** screen in the sidebar.
 
 - **Presets** for common environments: DEV, FIT, UAT, PROD.
-- **Custom KeyIdentifiers:** add your own named keys.
+- **Custom KeyIdentifiers:** add your own named keys and drag rows to set the
+  order used in KeyIdentifier dropdowns.
 - **Secure storage:** keys live in VS Code's built-in secret storage and never
   leave the machine.
 - **Visibility toggle:** show or hide keys with partial masking.
@@ -295,21 +297,22 @@ and reopening the panel.
 
 | Command                      | Title                                        | Where                         |
 | ----------------------------- | --------------------------------------------- | ------------------------------ |
-| `aes.encryptDecrypt`         | MuleSoft AES Encrypt / Decrypt               | Sidebar, palette               |
-| `aes.encryptSelection`       | MuleSoft AES: Encrypt Selection              | Editor context menu, palette   |
-| `aes.decryptSelection`       | MuleSoft AES: Decrypt Selection              | Editor context menu, palette   |
-| `aes.fileEncryptDecrypt`     | MuleSoft AES: Encrypt / Decrypt File         | Editor toolbar, palette        |
-| `aesEnhanced.encryptDecrypt` | MuleSoft Secure Properties Encrypt / Decrypt | Sidebar, palette               |
-| `base64.encodeDecode`        | Base64 Encode / Decode                       | Sidebar, palette               |
-| `aes.openSettings`           | MuleSoft AES: Settings                       | Sidebar                        |
+| `aes.encryptDecrypt`         | MuleSoft AES Encrypt / Decrypt               | Sidebar, editor toolbar, palette |
+| `aes.encryptSelection`       | MuleSoft AES: Encrypt Selection              | Editor context menu, palette     |
+| `aes.decryptSelection`       | MuleSoft AES: Decrypt Selection              | Editor context menu, palette     |
+| `aes.fileEncryptDecrypt`     | MuleSoft AES: Encrypt / Decrypt File         | Editor toolbar, palette          |
+| `aesEnhanced.encryptDecrypt` | MuleSoft Secure Properties Encrypt / Decrypt | Sidebar, palette                 |
+| `base64.encodeDecode`        | Base64 Encode / Decode                       | Sidebar, palette                 |
+| `aes.openSettings`           | MuleSoft AES: Settings                       | Sidebar                          |
 
-`aes.fileEncryptDecrypt` is the only editor-toolbar entry. It appears for
-`.yaml`, `.yml`, and `.properties` files and opens the whole-file workflow panel
-beside the editor. `aes.encryptSelection` and `aes.decryptSelection` appear only
-in the editor context menu, and only when text is selected in those same file
-types — there is no separate "selection actions" toolbar command. The Secure
-Properties tool has no editor toolbar button or context menu entry by design;
-open it from the sidebar or Command Palette.
+Two editor-toolbar entries appear for `.yaml`, `.yml`, and `.properties` files:
+`aes.encryptDecrypt` opens the main MuleSoft AES Encrypt / Decrypt screen, and
+`aes.fileEncryptDecrypt` opens the whole-file workflow panel beside the editor.
+`aes.encryptSelection` and `aes.decryptSelection` appear only in the editor
+context menu, and only when text is selected in those same file types — there is
+no separate "selection actions" toolbar command. The Secure Properties tool has
+no editor toolbar button or context menu entry by design; open it from the
+sidebar or Command Palette.
 
 ---
 
