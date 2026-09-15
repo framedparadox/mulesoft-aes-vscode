@@ -16,7 +16,6 @@ export class AesPanel {
         this._context = context;
         this._onKeysChanged = onKeysChanged;
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-        this._initHtml();
 
         this._panel.webview.onDidReceiveMessage(
             (message) => {
@@ -41,9 +40,10 @@ export class AesPanel {
     }
 
     public static render(context: vscode.ExtensionContext, onKeysChanged?: () => void): void {
-        const column = vscode.ViewColumn.One;
+        const column = vscode.ViewColumn.Beside;
         if (AesPanel.currentPanel) {
             AesPanel.currentPanel._panel.reveal(column);
+            void AesPanel.currentPanel._prefillFromClipboardIfEmpty();
             return;
         }
 
@@ -58,7 +58,25 @@ export class AesPanel {
             }
         );
         panel.iconPath = vscode.Uri.joinPath(context.extensionUri, 'resources', 'icons', 'aes.svg');
-        AesPanel.currentPanel = new AesPanel(panel, context, onKeysChanged);
+        const instance = new AesPanel(panel, context, onKeysChanged);
+        AesPanel.currentPanel = instance;
+        void instance._bootstrap();
+    }
+
+    /** First open: load UI and prefill input from clipboard when it has text. */
+    private async _bootstrap(): Promise<void> {
+        const clipboardText = await vscode.env.clipboard.readText();
+        const prefill = clipboardText.trim().length > 0 ? clipboardText : undefined;
+        await this._initHtml(prefill);
+    }
+
+    /** Re-open: only fill input when it is still empty and clipboard has text. */
+    private async _prefillFromClipboardIfEmpty(): Promise<void> {
+        const clipboardText = await vscode.env.clipboard.readText();
+        if (!clipboardText.trim()) {
+            return;
+        }
+        this._panel.webview.postMessage({ command: 'prefillInputIfEmpty', text: clipboardText });
     }
 
     public refreshKeyIdentifiers(): void {
@@ -108,7 +126,7 @@ export class AesPanel {
         return `${key.substring(0, 5)}${'*'.repeat(key.length - 8)}${key.substring(key.length - 3)}`;
     }
 
-    private async _initHtml(): Promise<void> {
+    private async _initHtml(clipboardPrefill?: string): Promise<void> {
         const webview = this._panel.webview;
         const nonce = createNonce();
         const csp = contentSecurityPolicy(webview, nonce);
@@ -120,6 +138,7 @@ export class AesPanel {
                     `<option value="${escapeHtml(keyIdentifier.key)}">${escapeHtml(keyIdentifier.keyIdentifier)}</option>`
             )
             .join('');
+        const initialInputJson = JSON.stringify(clipboardPrefill ?? '');
 
         this._panel.webview.html = `<!DOCTYPE html>
 <html lang="en">
@@ -368,6 +387,10 @@ export class AesPanel {
         let isKeyVisible = true;
         let isKeyIdentifierSelected = false;
         let actualKeyValue = '';
+        const initialClipboardPrefill = ${initialInputJson};
+        if (initialClipboardPrefill) {
+            inputText.value = initialClipboardPrefill;
+        }
 
         const eyeOpenIcon = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>';
         const eyeClosedIcon = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>';
@@ -596,6 +619,11 @@ export class AesPanel {
                     closeSaveModal();
                     upsertKeyIdentifierOption(message.keyIdentifier, message.key);
                     showSuccess('Saved key as "' + message.keyIdentifier + '".');
+                    break;
+                case 'prefillInputIfEmpty':
+                    if (!inputText.value.trim() && message.text) {
+                        inputText.value = message.text;
+                    }
                     break;
                 case 'error':
                     showError(message.message);

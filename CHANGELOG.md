@@ -21,6 +21,9 @@ version `0.0.6`, but no `v0.0.6` tag has been cut yet.
   `.yaml`, `.yml`, and `.properties` files, alongside the existing whole-file
   workflow button (`aes.fileEncryptDecrypt`). Uses the `mule-secure.svg` icon
   so the two toolbar entries are easy to tell apart.
+- **AES panel opens beside the editor** (`ViewColumn.Beside`) and, on first
+  open or when Input Text is empty, auto-fills from the system clipboard when
+  it already contains text.
 - **"Open in sidebar" button** on the whole-file encrypt/decrypt panel
   (`aes.fileEncryptDecrypt`). A new icon button next to the panel title sends
   an `openSidebar` message that focuses and reveals the MuleSoft AES

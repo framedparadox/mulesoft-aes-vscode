@@ -306,8 +306,10 @@ and reopening the panel.
 | `aes.openSettings`           | MuleSoft AES: Settings                       | Sidebar                          |
 
 Two editor-toolbar entries appear for `.yaml`, `.yml`, and `.properties` files:
-`aes.encryptDecrypt` opens the main MuleSoft AES Encrypt / Decrypt screen, and
-`aes.fileEncryptDecrypt` opens the whole-file workflow panel beside the editor.
+`aes.encryptDecrypt` opens the main MuleSoft AES Encrypt / Decrypt screen to the
+right of the editor (and, when Input Text is empty, prefills from the clipboard
+if text is already copied), and `aes.fileEncryptDecrypt` opens the whole-file
+workflow panel beside the editor.
 `aes.encryptSelection` and `aes.decryptSelection` appear only in the editor
 context menu, and only when text is selected in those same file types — there is
 no separate "selection actions" toolbar command. The Secure Properties tool has
