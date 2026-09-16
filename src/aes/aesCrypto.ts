@@ -41,6 +41,12 @@ export function decrypt(text: string, key: string): string {
     const { algorithm, keyBytes, iv } = buildCipherInputs(key);
 
     let encryptedText = text.trim();
+    if (
+        (encryptedText.startsWith('"') && encryptedText.endsWith('"')) ||
+        (encryptedText.startsWith("'") && encryptedText.endsWith("'"))
+    ) {
+        encryptedText = encryptedText.slice(1, -1).trim();
+    }
     if (encryptedText.startsWith('![') && encryptedText.endsWith(']')) {
         encryptedText = encryptedText.substring(2, encryptedText.length - 1);
     }

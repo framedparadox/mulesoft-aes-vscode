@@ -26,9 +26,20 @@ interface SourceLine {
 }
 
 const SECURE_VALUE_PATTERN = /^!\[[^\]\r\n]+\]$/;
+const QUOTED_SECURE_VALUE_PATTERN = /^(["'])(!\[[^\]\r\n]+\])\1$/;
+
+function extractSecureValue(value: string): string | undefined {
+  const trimmed = value.trim();
+  if (SECURE_VALUE_PATTERN.test(trimmed)) {
+    return trimmed;
+  }
+
+  const quotedMatch = trimmed.match(QUOTED_SECURE_VALUE_PATTERN);
+  return quotedMatch?.[2];
+}
 
 export function isSecureValue(value: string): boolean {
-  return SECURE_VALUE_PATTERN.test(value.trim());
+  return extractSecureValue(value) !== undefined;
 }
 
 export function getSupportedFileKind(
@@ -162,14 +173,16 @@ function collectYamlSecureValues(text: string): FileFieldCandidate[] {
       const value = match[0];
       const before = content.slice(0, match.index);
       const after = content.slice(match.index + value.length);
-      if (after.trim()) {
+      if (!isCompleteYamlSecureValue(before, after)) {
         continue;
       }
       if (!isYamlValuePosition(before)) {
         continue;
       }
-      const start = line.start + match.index;
-      const end = start + value.length;
+
+      const quoteOffset = resolveYamlSecureValueQuoteOffset(before, after);
+      const start = line.start + match.index - quoteOffset.opening;
+      const end = line.start + match.index + value.length + quoteOffset.closing;
       fields.push(
         createField(
           yamlLineLabel(before, lineNumberAt(text, start)),
@@ -215,12 +228,22 @@ function collectPropertiesFields(
       continue;
     }
 
-    const encrypted = isSecureValue(value);
+    const secureValue = extractSecureValue(value);
+    const encrypted = secureValue !== undefined;
     if (
       (operation === "encrypt" && !encrypted) ||
       (operation === "decrypt" && encrypted)
     ) {
-      fields.push(createField(parsed.key, value, start, end, encrypted, text));
+      fields.push(
+        createField(
+          parsed.key,
+          secureValue ?? value,
+          start,
+          end,
+          encrypted,
+          text,
+        ),
+      );
     }
   }
 
@@ -373,11 +396,41 @@ function isEscaped(text: string, index: number): boolean {
 
 function isYamlValuePosition(prefix: string): boolean {
   const trimmed = prefix.trim();
-  return /^-\s*$/.test(trimmed) || /:\s*$/.test(prefix);
+  return (
+    /^-\s*$/.test(trimmed) ||
+    /^-\s*["']$/.test(trimmed) ||
+    /:\s*$/.test(prefix) ||
+    /:\s*["']$/.test(prefix)
+  );
+}
+
+function isCompleteYamlSecureValue(before: string, after: string): boolean {
+  const quoteOffset = resolveYamlSecureValueQuoteOffset(before, after);
+  if (quoteOffset.opening > 0) {
+    return after.slice(quoteOffset.closing).trim().length === 0;
+  }
+  return after.trim().length === 0;
+}
+
+function resolveYamlSecureValueQuoteOffset(
+  before: string,
+  after: string,
+): { opening: number; closing: number } {
+  const openingQuote = before.at(-1);
+  if (
+    (openingQuote === '"' || openingQuote === "'") &&
+    after.startsWith(openingQuote)
+  ) {
+    return { opening: 1, closing: 1 };
+  }
+  return { opening: 0, closing: 0 };
 }
 
 function yamlLineLabel(prefix: string, line: number): string {
-  const mappingMatch = prefix.match(/(?:^|\s|-\s*)([^:\s][^:]*)\s*:\s*$/);
+  const normalizedPrefix = prefix.replace(/["']$/, "");
+  const mappingMatch = normalizedPrefix.match(
+    /(?:^|\s|-\s*)([^:\s][^:]*)\s*:\s*$/,
+  );
   if (mappingMatch) {
     return mappingMatch[1].trim();
   }
