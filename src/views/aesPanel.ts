@@ -39,19 +39,31 @@ export class AesPanel {
         );
     }
 
+    /** Bring the open panel forward without moving it to another editor group. */
+    public static revealCurrent(): void {
+        // reveal() without a column keeps the panel where the user put it;
+        // passing ViewColumn.Beside resolves against the *active* group, which
+        // pushes the panel into a new group when it is already focused.
+        AesPanel.currentPanel?._panel.reveal();
+    }
+
     public static render(context: vscode.ExtensionContext, onKeysChanged?: () => void): void {
-        const column = vscode.ViewColumn.Beside;
         if (AesPanel.currentPanel) {
-            AesPanel.currentPanel._panel.reveal(column);
+            AesPanel.revealCurrent();
             return;
         }
 
         const panel = vscode.window.createWebviewPanel(
             'aes.encryptDecrypt',
             'MuleSoft AES Encrypt / Decrypt',
-            column,
+            vscode.ViewColumn.Beside,
             {
                 enableScripts: true,
+                // Deliberate: the alternative to retaining the hidden context is
+                // persisting form state through vscode.setState(), which is
+                // disk-backed. These inputs hold plaintext secrets and encryption
+                // keys, so keeping them in memory for the session is the safer
+                // trade. Keys themselves live in SecretStorage, never here.
                 retainContextWhenHidden: true,
                 localResourceRoots: [context.extensionUri],
             }
@@ -70,8 +82,9 @@ export class AesPanel {
         onKeysChanged?: () => void,
     ): void {
         if (AesPanel.currentPanel) {
-            panel.dispose();
-            AesPanel.currentPanel._panel.reveal(vscode.ViewColumn.Beside);
+            // Callers check this first and keep their own panel; guard anyway so
+            // a stray call reveals the open panel instead of closing the caller's.
+            AesPanel.revealCurrent();
             return;
         }
 

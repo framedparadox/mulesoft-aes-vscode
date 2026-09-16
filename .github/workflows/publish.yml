@@ -43,8 +43,14 @@ jobs:
       - name: Run lint
         run: npm run lint
 
-      - name: Run tests
+      - name: Compile
         run: npm run pretest
+
+      # vscode-test launches a real VS Code instance, which needs a display on
+      # a headless runner. Without xvfb this step cannot run at all, which is
+      # why the suite previously only ever got compiled.
+      - name: Run tests
+        run: xvfb-run -a npm test
 
       - name: Build VSIX package
         run: npx vsce package --out mule-aes.vsix

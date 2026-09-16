@@ -1,4 +1,5 @@
 import * as crypto from 'crypto';
+import { unwrapSecureValue } from './secureValue';
 
 /**
  * MuleSoft-compatible AES encryption / decryption.
@@ -40,16 +41,7 @@ export function encrypt(text: string, key: string): string {
 export function decrypt(text: string, key: string): string {
     const { algorithm, keyBytes, iv } = buildCipherInputs(key);
 
-    let encryptedText = text.trim();
-    if (
-        (encryptedText.startsWith('"') && encryptedText.endsWith('"')) ||
-        (encryptedText.startsWith("'") && encryptedText.endsWith("'"))
-    ) {
-        encryptedText = encryptedText.slice(1, -1).trim();
-    }
-    if (encryptedText.startsWith('![') && encryptedText.endsWith(']')) {
-        encryptedText = encryptedText.substring(2, encryptedText.length - 1);
-    }
+    const encryptedText = unwrapSecureValue(text);
 
     const decipher = crypto.createDecipheriv(algorithm, keyBytes, iv);
     return decipher.update(encryptedText, 'base64', 'utf8') + decipher.final('utf8');

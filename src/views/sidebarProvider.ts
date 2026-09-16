@@ -16,9 +16,6 @@ export type SidebarMode = 'tools' | 'editorCrypto';
 /** View id of the activity-bar webview (must match the `views` contribution in package.json). */
 export const SIDEBAR_VIEW_ID = 'muleAes.sidebar';
 
-/** Command that reveals and focuses the activity-bar view (auto-registered by VS Code from the view id). */
-export const SIDEBAR_FOCUS_COMMAND = `${SIDEBAR_VIEW_ID}.focus`;
-
 const TOOLS: SidebarItem[] = [
     {
         label: 'MuleSoft AES Encrypt / Decrypt',
@@ -88,6 +85,21 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             localResourceRoots: [this._extensionUri],
         };
 
+        // VS Code disposes and re-resolves this view as the container is hidden
+        // and shown. Drop the reference on dispose so later refreshes do not
+        // write html to a dead webview, and release the listeners below with it.
+        // Scoped to this resolve call so a newer view's listeners are never
+        // torn down by an older view disposing.
+        const viewDisposables: vscode.Disposable[] = [];
+        webviewView.onDidDispose(() => {
+            if (this._webviewView === webviewView) {
+                this._webviewView = undefined;
+            }
+            while (viewDisposables.length) {
+                viewDisposables.pop()?.dispose();
+            }
+        });
+
         // Initial render for whatever the current mode is
         void this._renderCurrent(webviewView);
 
@@ -112,14 +124,14 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                     await this.refreshKeyIdentifiers();
                 }
             }
-        });
+        }, null, viewDisposables);
 
         // Optional: when the view becomes visible, ensure correct content
         webviewView.onDidChangeVisibility(() => {
             if (webviewView.visible) {
                 void this._renderCurrent(webviewView);
             }
-        });
+        }, null, viewDisposables);
     }
 
     private async _renderCurrent(webviewView: vscode.WebviewView): Promise<void> {

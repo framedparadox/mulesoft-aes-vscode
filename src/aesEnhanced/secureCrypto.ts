@@ -1,4 +1,5 @@
 import * as crypto from 'crypto';
+import { unwrapSecureValue } from '../aes/secureValue';
 
 /**
  * MuleSoft Secure Properties compatible symmetric encryption / decryption.
@@ -141,10 +142,7 @@ export function decrypt(text: string, key: string, options: CryptoOptions = {}):
     const spec = resolveCipher(algorithm, mode, keyBuffer);
     ensureSupported(spec.name);
 
-    let encryptedText = text.trim();
-    if (encryptedText.startsWith('![') && encryptedText.endsWith(']')) {
-        encryptedText = encryptedText.substring(2, encryptedText.length - 1);
-    }
+    const encryptedText = unwrapSecureValue(text);
 
     let data = Buffer.from(encryptedText, 'base64');
     let iv: Buffer | null = null;

@@ -106,7 +106,8 @@ export class FileCryptoPanel {
 
     if (FileCryptoPanel.currentPanel) {
       FileCryptoPanel.currentPanel._documentUri = editor.document.uri;
-      FileCryptoPanel.currentPanel._panel.reveal(vscode.ViewColumn.Beside);
+      // reveal() without a column keeps the panel in its current editor group.
+      FileCryptoPanel.currentPanel._panel.reveal();
       void FileCryptoPanel.currentPanel._initHtml();
       return;
     }
@@ -144,6 +145,13 @@ export class FileCryptoPanel {
 
   /** Hand the webview panel to AesPanel without closing the editor tab. */
   private _replaceWithAesPanel(): void {
+    // An AES panel is already open, so there is nothing to hand over: reveal it
+    // and leave this panel (and the user's field selections) intact.
+    if (AesPanel.currentPanel) {
+      AesPanel.revealCurrent();
+      return;
+    }
+
     const panel = this._panel;
     FileCryptoPanel.currentPanel = undefined;
     while (this._disposables.length) {
@@ -159,11 +167,7 @@ export class FileCryptoPanel {
     const nonce = createNonce();
     const csp = contentSecurityPolicy(webview, nonce);
     const headerIcon = iconUri(webview, this._context.extensionUri, "aes2.svg");
-    const muleAesIcon = iconUri(
-      webview,
-      this._context.extensionUri,
-      "mule-secure.svg",
-    );
+    const muleAesIcon = iconUri(webview, this._context.extensionUri, "aes.svg");
     const keyIdentifiers = await getAesKeyIdentifiers(this._context);
     const configuredKeyIdentifiers = keyIdentifiers.filter(
       (entry) =>
@@ -373,6 +377,16 @@ export class FileCryptoPanel {
             margin: 0;
             cursor: pointer;
         }
+        .refresh-btn {
+            margin-left: auto;
+            padding: 2px 10px;
+            font-size: 12px;
+            background: var(--vscode-button-secondaryBackground);
+            color: var(--vscode-button-secondaryForeground);
+        }
+        .refresh-btn:hover {
+            background: var(--vscode-button-secondaryHoverBackground);
+        }
         .message {
             min-height: 18px;
             font-size: 12px;
@@ -430,6 +444,7 @@ export class FileCryptoPanel {
                     <span id="selectAllLabel">Select all</span>
                 </label>
                 <label id="fieldsLabel">Plain values</label>
+                <button type="button" id="refreshBtn" class="refresh-btn" title="Re-read the file and rebuild this list">Refresh</button>
             </div>
             <div id="fields" class="fields"></div>
             <div id="emptyState" class="muted" style="display: none;"></div>
@@ -667,6 +682,10 @@ export class FileCryptoPanel {
             });
             selectAllCheckbox.indeterminate = false;
         });
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            showInfo('Refreshing fields...');
+            vscode.postMessage({ command: 'refreshFields', operation });
+        });
         openAesBtn.addEventListener('click', () => {
             vscode.postMessage({ command: 'openAesPanel' });
         });
@@ -741,6 +760,15 @@ export class FileCryptoPanel {
       );
       const selectedFields = this._selectedFields(fields, message);
       if (selectedFields.length === 0) {
+        // Field ids are byte offsets, so editing the file after the list was
+        // rendered invalidates every selection. Say so instead of claiming the
+        // user selected nothing.
+        const selectionCount = message.selectedIds?.length ?? 0;
+        if (selectionCount > 0) {
+          throw new Error(
+            "The file changed since this list was built. Press Refresh and select the values again.",
+          );
+        }
         throw new Error(
           message.operation === "encrypt"
             ? "Select at least one plain value to encrypt."
@@ -753,6 +781,7 @@ export class FileCryptoPanel {
         selectedFields,
         key,
         message.operation,
+        kind,
       );
       if (result.failures.length > 0) {
         const details = result.failures

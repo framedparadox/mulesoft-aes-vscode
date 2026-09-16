@@ -54,7 +54,7 @@
       {
         "command": "aes.encryptDecrypt",
         "title": "MuleSoft AES Encrypt / Decrypt",
-        "icon": "resources/icons/mule-secure.svg"
+        "icon": "resources/icons/aes.svg"
       },
       {
         "command": "aesEnhanced.encryptDecrypt",
