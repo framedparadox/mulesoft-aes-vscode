@@ -7,10 +7,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project uses the version numbers from `package.json` (not strict
 SemVer, since this is a pre-1.0 VS Code extension).
 
-## [Unreleased]
+## [0.0.7]
 
-Changes on `main` since the `v0.0.5` tag. `package.json` currently reports
-version `0.0.6`, but no `v0.0.6` tag has been cut yet.
+### Added
+
+- Quoted secure-value detection for decrypt auto-populate (`"![...]"` /
+  `'![...]'`) in YAML and properties files.
+- **AES Encrypt / Decrypt** logo button on the whole-file workflow panel that
+  opens the main AES screen.
+
+### Changed
+
+- Bumped extension version to `0.0.7`.
+- Removed automatic clipboard prefill from the main AES Encrypt / Decrypt panel.
+- Whole-file encrypt/decrypt panel: replaced **Select all** / **Clear** /
+  **Refresh** with a master checkbox (default none selected; checks/unchecks
+  all). Decrypt mode now uses the same per-field selection as encrypt.
+- Restored both editor toolbar buttons for YAML/properties files:
+  `aes.encryptDecrypt` and `aes.fileEncryptDecrypt`.
+
+---
+
+## [0.0.6]
+
+Changes since the `v0.0.5` tag.
 
 ### Added
 

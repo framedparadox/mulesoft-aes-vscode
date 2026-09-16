@@ -2,7 +2,7 @@
   "name": "mule-aes",
   "displayName": "MuleSoft Secure AES Encrypt / Decrypt",
   "description": "Encrypt and decrypt text using MuleSoft AES-256 / Secure Properties format. Also includes Base64 encoding and decoding tools.",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "publisher": "framedparadox",
   "license": "MIT",
   "icon": "resources/icon.png",
@@ -37,7 +37,7 @@
         {
           "id": "muleAes",
           "title": "MuleSoft AES",
-          "icon": "resources/icons/mule-secure.svg"
+          "icon": "resources/icons/activity.svg"
         }
       ]
     },
@@ -84,7 +84,7 @@
       {
         "command": "aes.fileEncryptDecrypt",
         "title": "MuleSoft AES: Encrypt / Decrypt File",
-        "icon": "resources/icons/aes.svg"
+        "icon": "resources/icons/aes2.svg"
       }
     ],
     "menus": {

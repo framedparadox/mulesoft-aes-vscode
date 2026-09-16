@@ -53,13 +53,13 @@ The streamlined option for projects using MuleSoft's standard AES configuration.
 - **Selection actions:** select a value, right-click, and encrypt or decrypt it
   in place with a saved KeyIdentifier or one-off manual key.
 - **Whole-file workflow:** open the file workflow beside the editor to encrypt
-  selected plain fields or decrypt every secure value in the active file.
-  **Select all** / **Clear** buttons adjust the encrypt-mode selection, and a
-  **Refresh** button re-scans the file for changes made outside the panel. Each
-  field row shows its name, value (truncated past 120 characters), and full
-  path with line number, and the KeyIdentifier dropdown shows a masked preview
-  of the selected key — just like the main AES screen. A header button jumps
-  back to the sidebar.
+  or decrypt selected fields in the active file. A **Select all** checkbox
+  (default unchecked) selects or clears every field; encrypt and decrypt both
+  use the same per-field selection. Each field row shows its name, value
+  (truncated past 120 characters), and full path with line number, and the
+  KeyIdentifier dropdown shows a masked preview of the selected key — just like
+  the main AES screen. A logo button in the panel header opens the main AES
+  tool.
 
 | Property        | Value                                           |
 | --------------- | ----------------------------------------------- |
@@ -234,13 +234,13 @@ and reopening the panel.
 3. Or click the **MuleSoft AES: Encrypt / Decrypt File** button in the editor
    toolbar to open the whole-file workflow panel beside the editor.
 4. In the file workflow, choose a KeyIdentifier (its key shows masked, as on
-   the main AES screen) or input a key manually. Encrypt mode lets you
-   multi-select plain fields, with **Select all** / **Clear** buttons to adjust
-   the selection and a **Refresh** button to re-scan the file; decrypt mode
-   automatically targets all complete `![ ... ]` secure values. Each field row
-   lists its name on the left and its value (truncated past 120 characters)
-   plus full path/line number on the right. An icon button in the panel header
-   jumps back to the sidebar.
+   the main AES screen) or input a key manually. Encrypt and decrypt both let
+   you multi-select fields; use the **Select all** checkbox to select or clear
+   every row (nothing is selected by default). Quoted secure values such as
+   `"![...]"` are detected for decrypt. Each field row lists its name on the
+   left and its value (truncated past 120 characters) plus full path/line
+   number on the right. A logo button in the panel header opens the main AES
+   tool.
 
 ---
 
@@ -263,16 +263,16 @@ and reopening the panel.
 1. Open `application.yaml` or `application.properties`.
 2. Click **MuleSoft AES: Encrypt / Decrypt File** in the editor toolbar.
 3. Keep **Encrypt** selected, choose a KeyIdentifier or input a key, and select
-   the fields you want to encrypt.
+   the fields you want to encrypt (or use **Select all**).
 4. Click **Encrypt selected values** to apply all replacements in one edit.
 
-**Decrypt all secure values in a file**
+**Decrypt selected secure values in a file**
 
 1. Open the file workflow beside a YAML or properties editor.
 2. Switch to **Decrypt**.
 3. Choose the same KeyIdentifier or manual key used for encryption.
-4. Click **Decrypt all secure values** to replace every detected `![ ... ]`
-   value in one edit.
+4. Select the secure values to decrypt (or use **Select all**).
+5. Click **Decrypt selected values** to replace them in one edit.
 
 **Encrypt with a non-default algorithm (Secure Properties tool)**
 
@@ -307,9 +307,9 @@ and reopening the panel.
 
 Two editor-toolbar entries appear for `.yaml`, `.yml`, and `.properties` files:
 `aes.encryptDecrypt` opens the main MuleSoft AES Encrypt / Decrypt screen to the
-right of the editor (and, when Input Text is empty, prefills from the clipboard
-if text is already copied), and `aes.fileEncryptDecrypt` opens the whole-file
-workflow panel beside the editor.
+right of the editor, and `aes.fileEncryptDecrypt` opens the whole-file
+workflow panel beside the editor. The file workflow header includes an icon
+button that opens the main AES screen.
 `aes.encryptSelection` and `aes.decryptSelection` appear only in the editor
 context menu, and only when text is selected in those same file types — there is
 no separate "selection actions" toolbar command. The Secure Properties tool has

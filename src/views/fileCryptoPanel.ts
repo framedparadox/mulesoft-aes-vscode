@@ -16,7 +16,8 @@ import {
   escapeHtml,
   iconUri,
 } from "./webviewUtils";
-import { SIDEBAR_FOCUS_COMMAND } from "./sidebarProvider";
+import { AesPanel } from "./aesPanel";
+import { AESEnhancedPanel } from "./aesEnhancedPanel";
 
 interface ApplyMessage {
   command: "apply";
@@ -30,11 +31,11 @@ interface RefreshMessage {
   operation: FileCryptoOperation;
 }
 
-interface OpenSidebarMessage {
-  command: "openSidebar";
+interface OpenAesPanelMessage {
+  command: "openAesPanel";
 }
 
-type PanelMessage = ApplyMessage | RefreshMessage | OpenSidebarMessage;
+type PanelMessage = ApplyMessage | RefreshMessage | OpenAesPanelMessage;
 
 interface FieldViewModel {
   id: string;
@@ -66,8 +67,8 @@ export class FileCryptoPanel {
 
     this._panel.webview.onDidReceiveMessage(
       (message: PanelMessage) => {
-        if (message.command === "openSidebar") {
-          void vscode.commands.executeCommand(SIDEBAR_FOCUS_COMMAND);
+        if (message.command === "openAesPanel") {
+          this._replaceWithAesPanel();
           return;
         }
         if (message.command === "refreshFields") {
@@ -124,7 +125,7 @@ export class FileCryptoPanel {
       context.extensionUri,
       "resources",
       "icons",
-      "aes.svg",
+      "aes2.svg",
     );
     FileCryptoPanel.currentPanel = new FileCryptoPanel(
       panel,
@@ -141,11 +142,28 @@ export class FileCryptoPanel {
     }
   }
 
+  /** Hand the webview panel to AesPanel without closing the editor tab. */
+  private _replaceWithAesPanel(): void {
+    const panel = this._panel;
+    FileCryptoPanel.currentPanel = undefined;
+    while (this._disposables.length) {
+      this._disposables.pop()?.dispose();
+    }
+    AesPanel.renderReplacing(panel, this._context, () =>
+      AESEnhancedPanel.currentPanel?.refreshKeyIdentifiers(),
+    );
+  }
+
   private async _initHtml(): Promise<void> {
     const webview = this._panel.webview;
     const nonce = createNonce();
     const csp = contentSecurityPolicy(webview, nonce);
-    const headerIcon = iconUri(webview, this._context.extensionUri, "aes.svg");
+    const headerIcon = iconUri(webview, this._context.extensionUri, "aes2.svg");
+    const muleAesIcon = iconUri(
+      webview,
+      this._context.extensionUri,
+      "mule-secure.svg",
+    );
     const keyIdentifiers = await getAesKeyIdentifiers(this._context);
     const configuredKeyIdentifiers = keyIdentifiers.filter(
       (entry) =>
@@ -213,10 +231,9 @@ export class FileCryptoPanel {
         .open-ext-btn:hover {
             background: var(--vscode-button-secondaryHoverBackground);
         }
-        .open-ext-btn svg {
+        .open-ext-btn img {
             width: 18px;
             height: 18px;
-            fill: currentColor;
         }
         label {
             display: block;
@@ -335,6 +352,27 @@ export class FileCryptoPanel {
             gap: 8px;
             flex-wrap: wrap;
         }
+        .fields-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .fields-header label {
+            margin-bottom: 0;
+        }
+        .select-all-row {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+        .select-all-row input {
+            margin: 0;
+            cursor: pointer;
+        }
         .message {
             min-height: 18px;
             font-size: 12px;
@@ -352,10 +390,8 @@ export class FileCryptoPanel {
         <div class="header">
             <img src="${headerIcon}" alt="" />
             <h2>MuleSoft AES File Encrypt / Decrypt</h2>
-            <button type="button" id="openExtensionBtn" class="open-ext-btn" title="Open MuleSoft AES in the sidebar">
-                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M1.5 2h13A1.5 1.5 0 0 1 16 3.5v9A1.5 1.5 0 0 1 14.5 14h-13A1.5 1.5 0 0 1 0 12.5v-9A1.5 1.5 0 0 1 1.5 2zM6 3H1.5a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5H6V3zm1 0v10h7.5a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5H7z"/>
-                </svg>
+            <button type="button" id="openAesBtn" class="open-ext-btn" title="Open MuleSoft AES Encrypt / Decrypt">
+                <img src="${muleAesIcon}" alt="" />
             </button>
         </div>
 
@@ -388,15 +424,13 @@ export class FileCryptoPanel {
         </div>
 
         <div>
-            <div class="actions">
-                <button type="button" id="selectAllBtn">Select all</button>
-                <button type="button" id="clearSelectionBtn">Clear</button>
-                <button type="button" id="refreshBtn">Refresh</button>
+            <div class="fields-header">
+                <label class="select-all-row" for="selectAllCheckbox">
+                    <input type="checkbox" id="selectAllCheckbox" />
+                    <span id="selectAllLabel">Select all</span>
+                </label>
+                <label id="fieldsLabel">Plain values</label>
             </div>
-        </div>
-
-        <div>
-            <label id="fieldsLabel">Fields</label>
             <div id="fields" class="fields"></div>
             <div id="emptyState" class="muted" style="display: none;"></div>
         </div>
@@ -423,17 +457,18 @@ export class FileCryptoPanel {
         const fieldsLabel = document.getElementById('fieldsLabel');
         const emptyState = document.getElementById('emptyState');
         const applyBtn = document.getElementById('applyBtn');
-        const openExtensionBtn = document.getElementById('openExtensionBtn');
+        const openAesBtn = document.getElementById('openAesBtn');
+        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
         const message = document.getElementById('message');
 
         function setOperation(nextOperation) {
             operation = nextOperation;
             encryptMode.classList.toggle('active', operation === 'encrypt');
             decryptMode.classList.toggle('active', operation === 'decrypt');
-            applyBtn.textContent = operation === 'encrypt' ? 'Encrypt selected values' : 'Decrypt all secure values';
-            document.getElementById('selectAllBtn').style.display = operation === 'encrypt' ? '' : 'none';
-            document.getElementById('clearSelectionBtn').style.display = operation === 'encrypt' ? '' : 'none';
+            applyBtn.textContent = operation === 'encrypt' ? 'Encrypt selected values' : 'Decrypt selected values';
             fieldsLabel.textContent = operation === 'encrypt' ? 'Plain values' : 'Secure values';
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = false;
             showInfo('Refreshing fields...');
             vscode.postMessage({ command: 'refreshFields', operation });
         }
@@ -491,11 +526,28 @@ export class FileCryptoPanel {
             updateToggleButton();
         }
 
+        function fieldCheckboxes() {
+            return Array.from(fieldsContainer.querySelectorAll('input[type="checkbox"]'));
+        }
+
         function selectedIds() {
-            if (operation === 'decrypt') {
-                return fields.map((field) => field.id);
+            return fieldCheckboxes()
+                .filter((input) => input.checked)
+                .map((input) => input.value);
+        }
+
+        function syncSelectAllCheckbox() {
+            const checkboxes = fieldCheckboxes();
+            if (checkboxes.length === 0) {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = false;
+                selectAllCheckbox.disabled = true;
+                return;
             }
-            return Array.from(fieldsContainer.querySelectorAll('input[type="checkbox"]:checked')).map((input) => input.value);
+            selectAllCheckbox.disabled = false;
+            const checkedCount = checkboxes.filter((input) => input.checked).length;
+            selectAllCheckbox.checked = checkedCount === checkboxes.length;
+            selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
         }
 
         function renderFields() {
@@ -509,15 +561,12 @@ export class FileCryptoPanel {
                 row.className = 'field-row';
 
                 const selector = document.createElement('div');
-                if (operation === 'encrypt') {
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.value = field.id;
-                    checkbox.checked = true;
-                    selector.appendChild(checkbox);
-                } else {
-                    selector.textContent = '';
-                }
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.value = field.id;
+                checkbox.checked = false;
+                checkbox.addEventListener('change', syncSelectAllCheckbox);
+                selector.appendChild(checkbox);
 
                 const name = document.createElement('div');
                 name.className = 'field-name';
@@ -541,6 +590,7 @@ export class FileCryptoPanel {
                 row.appendChild(details);
                 fieldsContainer.appendChild(row);
             }
+            syncSelectAllCheckbox();
         }
 
         function showInfo(text) {
@@ -610,21 +660,18 @@ export class FileCryptoPanel {
                 switchToCustomModeForTyping();
             }
         });
-        document.getElementById('selectAllBtn').addEventListener('click', () => {
-            fieldsContainer.querySelectorAll('input[type="checkbox"]').forEach((input) => input.checked = true);
+        selectAllCheckbox.addEventListener('change', () => {
+            const checked = selectAllCheckbox.checked;
+            fieldCheckboxes().forEach((input) => {
+                input.checked = checked;
+            });
+            selectAllCheckbox.indeterminate = false;
         });
-        document.getElementById('clearSelectionBtn').addEventListener('click', () => {
-            fieldsContainer.querySelectorAll('input[type="checkbox"]').forEach((input) => input.checked = false);
-        });
-        document.getElementById('refreshBtn').addEventListener('click', () => {
-            showInfo('Refreshing fields...');
-            vscode.postMessage({ command: 'refreshFields', operation });
-        });
-        openExtensionBtn.addEventListener('click', () => {
-            vscode.postMessage({ command: 'openSidebar' });
+        openAesBtn.addEventListener('click', () => {
+            vscode.postMessage({ command: 'openAesPanel' });
         });
         applyBtn.addEventListener('click', () => {
-            showInfo(operation === 'encrypt' ? 'Encrypting selected values...' : 'Decrypting secure values...');
+            showInfo(operation === 'encrypt' ? 'Encrypting selected values...' : 'Decrypting selected values...');
             vscode.postMessage({
                 command: 'apply',
                 operation,
@@ -637,12 +684,16 @@ export class FileCryptoPanel {
             const payload = event.data;
             if (payload.command === 'fields') {
                 fields = payload.fields;
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = false;
                 renderFields();
                 showInfo(payload.message || '');
                 return;
             }
             if (payload.command === 'applied') {
                 fields = payload.fields;
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = false;
                 renderFields();
                 showSuccess(payload.message);
                 return;
@@ -693,7 +744,7 @@ export class FileCryptoPanel {
         throw new Error(
           message.operation === "encrypt"
             ? "Select at least one plain value to encrypt."
-            : "No secure values were found to decrypt.",
+            : "Select at least one secure value to decrypt.",
         );
       }
 
@@ -753,10 +804,6 @@ export class FileCryptoPanel {
     fields: FileFieldCandidate[],
     message: ApplyMessage,
   ): FileFieldCandidate[] {
-    if (message.operation === "decrypt") {
-      return fields;
-    }
-
     const selectedIds = new Set(message.selectedIds ?? []);
     return fields.filter((field) => selectedIds.has(field.id));
   }
