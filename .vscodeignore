@@ -1,0 +1,18 @@
+.vscode/**
+.github/**
+.gitignore
+.vscodeignore
+
+# Sources and build intermediates: dist/extension.js is the published bundle.
+src/**
+out/**
+node_modules/**
+package-lock.json
+tsconfig.json
+webpack.config.js
+eslint.config.mjs
+**/*.map
+**/*.ts
+
+# README.md, CHANGELOG.md, LICENSE and resources/ are intentionally shipped:
+# the marketplace listing renders them.

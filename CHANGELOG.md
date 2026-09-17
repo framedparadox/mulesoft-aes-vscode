@@ -7,13 +7,66 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project uses the version numbers from `package.json` (not strict
 SemVer, since this is a pre-1.0 VS Code extension).
 
-## [Unreleased]
-
-Changes on `main` since the `v0.0.5` tag. `package.json` currently reports
-version `0.0.6`, but no `v0.0.6` tag has been cut yet.
+## [0.0.8]
 
 ### Added
 
+- Accessible names on whole-file field checkboxes (`aria-label` from field
+  path/name).
+- Keyboard **Move up** / **Move down** controls for KeyIdentifier reorder in
+  Settings (in addition to drag-and-drop).
+
+### Fixed
+
+- Whole-file panel: ignore stale `_initHtml` completions after handing the
+  webview to the main AES screen (render-generation token).
+- Whole-file panel: tag field refresh responses with operation/`requestId`,
+  drop stale Encrypt/Decrypt toggles, and keep Apply disabled until the
+  matching refresh arrives.
+
+### Changed
+
+- Bumped extension version to `0.0.8`.
+
+---
+
+## [0.0.7]
+
+### Added
+
+- Quoted secure-value detection for decrypt auto-populate (`"![...]"` /
+  `'![...]'`) in YAML and properties files.
+- **AES Encrypt / Decrypt** logo button on the whole-file workflow panel that
+  opens the main AES screen.
+
+### Changed
+
+- Bumped extension version to `0.0.7`.
+- Removed automatic clipboard prefill from the main AES Encrypt / Decrypt panel.
+- Whole-file encrypt/decrypt panel: replaced **Select all** / **Clear** /
+  **Refresh** with a master checkbox (default none selected; checks/unchecks
+  all). Decrypt mode now uses the same per-field selection as encrypt.
+- Restored both editor toolbar buttons for YAML/properties files:
+  `aes.encryptDecrypt` and `aes.fileEncryptDecrypt`.
+
+---
+
+## [0.0.6]
+
+Changes since the `v0.0.5` tag.
+
+### Added
+
+- **KeyIdentifier drag-to-reorder** in Settings: drag the handle on each row to
+  change the order of KeyIdentifiers. Saved order is used by KeyIdentifier
+  dropdowns across AES tools. (`src/views/settingsPanel.ts`)
+- **Editor toolbar button for the main AES screen** (`aes.encryptDecrypt`) on
+  `.yaml`, `.yml`, and `.properties` files, alongside the existing whole-file
+  workflow button (`aes.fileEncryptDecrypt`). Uses the `mule-secure.svg` icon
+  so the two toolbar entries are easy to tell apart.
+- **AES panel opens beside the editor** (`ViewColumn.Beside`) and, on first
+  open or when Input Text is empty, auto-fills from the system clipboard when
+  it already contains text.
 - **"Open in sidebar" button** on the whole-file encrypt/decrypt panel
   (`aes.fileEncryptDecrypt`). A new icon button next to the panel title sends
   an `openSidebar` message that focuses and reveals the MuleSoft AES
@@ -29,6 +82,8 @@ version `0.0.6`, but no `v0.0.6` tag has been cut yet.
 - Bumped extension version to `0.0.6` in `package.json`.
 - Reworked the icon path handling in `package.json` and refined the
   `mule-secure.svg` markup/structure.
+- `aes.encryptDecrypt` command icon now uses `mule-secure.svg` (palette and
+  editor toolbar).
 
 ---
 
@@ -147,7 +202,9 @@ version `0.0.6`, but no `v0.0.6` tag has been cut yet.
 - Activity-bar sidebar entry point (`src/views/sidebarProvider.ts`) linking to
   the AES tool, Base64 tool, and Settings screen.
 
-[unreleased]: https://github.com/framedparadox/mulesoft-aes-vscode/compare/v0.0.5...HEAD
+[unreleased]: https://github.com/framedparadox/mulesoft-aes-vscode/compare/v0.0.7...HEAD
+[0.0.7]: https://github.com/framedparadox/mulesoft-aes-vscode/compare/v0.0.6...v0.0.7
+[0.0.6]: https://github.com/framedparadox/mulesoft-aes-vscode/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/framedparadox/mulesoft-aes-vscode/compare/v0.0.4...v0.0.5
 [0.0.4]: https://github.com/framedparadox/mulesoft-aes-vscode/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/framedparadox/mulesoft-aes-vscode/compare/v0.0.1...v0.0.3

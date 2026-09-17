@@ -25,10 +25,58 @@ interface SourceLine {
   end: number;
 }
 
+/**
+ * Line lookup table built once per document.
+ *
+ * Resolving a line number by rescanning the text from offset 0 makes field
+ * collection quadratic in file size, which blocks the extension host on large
+ * property files. Building the line starts once (O(n)) and binary searching
+ * them (O(log n) per field) keeps collection linear overall.
+ */
+class LineIndex {
+  private readonly starts: number[];
+
+  constructor(text: string) {
+    const starts = [0];
+    for (let index = 0; index < text.length; index++) {
+      if (text[index] === "\n") {
+        starts.push(index + 1);
+      }
+    }
+    this.starts = starts;
+  }
+
+  /** 1-based line number containing `offset`. */
+  lineAt(offset: number): number {
+    let low = 0;
+    let high = this.starts.length - 1;
+    while (low < high) {
+      const mid = (low + high + 1) >> 1;
+      if (this.starts[mid] <= offset) {
+        low = mid;
+      } else {
+        high = mid - 1;
+      }
+    }
+    return low + 1;
+  }
+}
+
 const SECURE_VALUE_PATTERN = /^!\[[^\]\r\n]+\]$/;
+const QUOTED_SECURE_VALUE_PATTERN = /^(["'])(!\[[^\]\r\n]+\])\1$/;
+
+function extractSecureValue(value: string): string | undefined {
+  const trimmed = value.trim();
+  if (SECURE_VALUE_PATTERN.test(trimmed)) {
+    return trimmed;
+  }
+
+  const quotedMatch = trimmed.match(QUOTED_SECURE_VALUE_PATTERN);
+  return quotedMatch?.[2];
+}
 
 export function isSecureValue(value: string): boolean {
-  return SECURE_VALUE_PATTERN.test(value.trim());
+  return extractSecureValue(value) !== undefined;
 }
 
 export function getSupportedFileKind(
@@ -72,6 +120,7 @@ function collectYamlFields(
 function collectYamlPlainValues(text: string): FileFieldCandidate[] {
   const fields: FileFieldCandidate[] = [];
   const seenRanges = new Set<string>();
+  const lines = new LineIndex(text);
   const document = parseDocument(text, { keepSourceTokens: true });
 
   function visit(node: Node | null | undefined, path: string[]): void {
@@ -114,6 +163,13 @@ function collectYamlPlainValues(text: string): FileFieldCandidate[] {
       return;
     }
 
+    // Block scalars (`key: |` / `key: >`) carry their indicator and indentation
+    // outside the scalar range, so a single-line replacement cannot represent
+    // them without rewriting the whole node. Leave them untouched.
+    if (node.type === "BLOCK_LITERAL" || node.type === "BLOCK_FOLDED") {
+      return;
+    }
+
     const range = node.range;
     if (!range || range[1] <= range[0]) {
       return;
@@ -137,7 +193,7 @@ function collectYamlPlainValues(text: string): FileFieldCandidate[] {
     seenRanges.add(rangeId);
 
     fields.push(
-      createField(pathToLabel(path), String(value), start, end, false, text),
+      createField(pathToLabel(path), String(value), start, end, false, lines),
     );
   }
 
@@ -147,6 +203,7 @@ function collectYamlPlainValues(text: string): FileFieldCandidate[] {
 
 function collectYamlSecureValues(text: string): FileFieldCandidate[] {
   const fields: FileFieldCandidate[] = [];
+  const lines = new LineIndex(text);
   for (const line of splitLines(text)) {
     const trimmed = line.text.trim();
     if (!trimmed || trimmed.startsWith("#")) {
@@ -162,22 +219,24 @@ function collectYamlSecureValues(text: string): FileFieldCandidate[] {
       const value = match[0];
       const before = content.slice(0, match.index);
       const after = content.slice(match.index + value.length);
-      if (after.trim()) {
+      if (!isCompleteYamlSecureValue(before, after)) {
         continue;
       }
       if (!isYamlValuePosition(before)) {
         continue;
       }
-      const start = line.start + match.index;
-      const end = start + value.length;
+
+      const quoteOffset = resolveYamlSecureValueQuoteOffset(before, after);
+      const start = line.start + match.index - quoteOffset.opening;
+      const end = line.start + match.index + value.length + quoteOffset.closing;
       fields.push(
         createField(
-          yamlLineLabel(before, lineNumberAt(text, start)),
+          yamlLineLabel(before, lines.lineAt(start)),
           value,
           start,
           end,
           true,
-          text,
+          lines,
         ),
       );
     }
@@ -190,6 +249,7 @@ function collectPropertiesFields(
   operation: FileCryptoOperation,
 ): FileFieldCandidate[] {
   const fields: FileFieldCandidate[] = [];
+  const lines = new LineIndex(text);
   let inContinuation = false;
 
   for (const line of splitLines(text)) {
@@ -215,12 +275,22 @@ function collectPropertiesFields(
       continue;
     }
 
-    const encrypted = isSecureValue(value);
+    const secureValue = extractSecureValue(value);
+    const encrypted = secureValue !== undefined;
     if (
       (operation === "encrypt" && !encrypted) ||
       (operation === "decrypt" && encrypted)
     ) {
-      fields.push(createField(parsed.key, value, start, end, encrypted, text));
+      fields.push(
+        createField(
+          parsed.key,
+          secureValue ?? value,
+          start,
+          end,
+          encrypted,
+          lines,
+        ),
+      );
     }
   }
 
@@ -373,15 +443,52 @@ function isEscaped(text: string, index: number): boolean {
 
 function isYamlValuePosition(prefix: string): boolean {
   const trimmed = prefix.trim();
-  return /^-\s*$/.test(trimmed) || /:\s*$/.test(prefix);
+  return (
+    /^-\s*$/.test(trimmed) ||
+    /^-\s*["']$/.test(trimmed) ||
+    /:\s*$/.test(prefix) ||
+    /:\s*["']$/.test(prefix)
+  );
 }
 
-function yamlLineLabel(prefix: string, line: number): string {
-  const mappingMatch = prefix.match(/(?:^|\s|-\s*)([^:\s][^:]*)\s*:\s*$/);
-  if (mappingMatch) {
-    return mappingMatch[1].trim();
+function isCompleteYamlSecureValue(before: string, after: string): boolean {
+  const quoteOffset = resolveYamlSecureValueQuoteOffset(before, after);
+  if (quoteOffset.opening > 0) {
+    return after.slice(quoteOffset.closing).trim().length === 0;
   }
-  return `Line ${line}`;
+  return after.trim().length === 0;
+}
+
+function resolveYamlSecureValueQuoteOffset(
+  before: string,
+  after: string,
+): { opening: number; closing: number } {
+  const openingQuote = before.at(-1);
+  if (
+    (openingQuote === '"' || openingQuote === "'") &&
+    after.startsWith(openingQuote)
+  ) {
+    return { opening: 1, closing: 1 };
+  }
+  return { opening: 0, closing: 0 };
+}
+
+/**
+ * Label a secure value by the mapping key that precedes it, falling back to the
+ * line number. Scans rather than matching a regex: the equivalent pattern
+ * (`([^:\s][^:]*)\s*:\s*$`) lets `[^:]*` and `\s*` compete for the same
+ * characters and backtracks quadratically on long whitespace-heavy prefixes.
+ */
+function yamlLineLabel(prefix: string, line: number): string {
+  const beforeValue = prefix.replace(/["']$/, "").trimEnd();
+  if (!beforeValue.endsWith(":")) {
+    return `Line ${line}`;
+  }
+
+  const key = beforeValue.slice(0, -1);
+  const lastColon = key.lastIndexOf(":");
+  const label = (lastColon >= 0 ? key.slice(lastColon + 1) : key).trim();
+  return label.length > 0 ? label : `Line ${line}`;
 }
 
 function scalarKey(node: unknown): string | undefined {
@@ -426,7 +533,7 @@ function createField(
   start: number,
   end: number,
   encrypted: boolean,
-  text: string,
+  lines: LineIndex,
 ): FileFieldCandidate {
   return {
     id: `${start}:${end}`,
@@ -435,7 +542,7 @@ function createField(
     value,
     range: { start, end },
     encrypted,
-    line: lineNumberAt(text, start),
+    line: lines.lineAt(start),
   };
 }
 
@@ -446,14 +553,4 @@ function leafName(path: string): string {
 
 function sortFields(fields: FileFieldCandidate[]): FileFieldCandidate[] {
   return fields.sort((left, right) => left.range.start - right.range.start);
-}
-
-function lineNumberAt(text: string, offset: number): number {
-  let line = 1;
-  for (let index = 0; index < offset; index++) {
-    if (text[index] === "\n") {
-      line++;
-    }
-  }
-  return line;
 }

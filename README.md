@@ -1,11 +1,57 @@
-# MuleSoft AES & Secure Properties Encrypt / Decrypt
+<div align="center">
 
-![License](https://img.shields.io/badge/license-MIT-green)
+<img src="https://raw.githubusercontent.com/framedparadox/mulesoft-aes-vscode/main/resources/icon.png" alt="MuleSoft AES" width="112" height="112" />
+<br/>
+
+<h1>MuleSoft AES &amp; Secure Properties</h1>
+
+<p><b>Encrypt and decrypt MuleSoft secure configuration properties without leaving your editor.</b></p>
+
+<p>
+AES-128 / AES-256, Blowfish, DES, DESede, RC2 and RC4 &nbsp;&middot;&nbsp; CBC / CFB / ECB / OFB &nbsp;&middot;&nbsp; optional random IVs<br />
+In-place YAML and <code>.properties</code> editing &nbsp;&middot;&nbsp; Base64 utilities &nbsp;&middot;&nbsp; keys stored in your OS keychain<br />
+Everything runs locally — no keys or data ever leave your machine.
+</p>
+
+<p>
+<a href="https://marketplace.visualstudio.com/items?itemName=framedparadox.mule-aes"><img alt="VS Code Marketplace version" src="https://vsmarketplacebadges.dev/version-short/framedparadox.mule-aes.svg?style=flat-square&amp;label=Marketplace&amp;color=007ACC" /></a>
+<a href="https://marketplace.visualstudio.com/items?itemName=framedparadox.mule-aes"><img alt="VS Code Marketplace installs" src="https://vsmarketplacebadges.dev/installs-short/framedparadox.mule-aes.svg?style=flat-square&amp;label=installs&amp;color=007ACC" /></a>
+<a href="https://marketplace.visualstudio.com/items?itemName=framedparadox.mule-aes"><img alt="VS Code Marketplace downloads" src="https://vsmarketplacebadges.dev/downloads-short/framedparadox.mule-aes.svg?style=flat-square&amp;label=downloads&amp;color=007ACC" /></a>
+</p>
+
+<p>
+<a href="https://open-vsx.org/extension/framedparadox/mule-aes"><img alt="Open VSX version" src="https://img.shields.io/open-vsx/v/framedparadox/mule-aes?style=flat-square&amp;label=Open%20VSX&amp;color=C160EF" /></a>
+<a href="https://open-vsx.org/extension/framedparadox/mule-aes"><img alt="Open VSX downloads" src="https://img.shields.io/open-vsx/dt/framedparadox/mule-aes?style=flat-square&amp;label=downloads&amp;color=C160EF" /></a>
+<a href="https://github.com/framedparadox/mulesoft-aes-vscode/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/framedparadox/mulesoft-aes-vscode?style=flat-square&amp;color=3FB950" /></a>
+<img alt="Requires VS Code 1.105.0 or later" src="https://img.shields.io/badge/VS%20Code-%5E1.105.0-007ACC?style=flat-square&amp;logo=visualstudiocode&amp;logoColor=white" />
+</p>
+
+<p>
+<a href="https://marketplace.visualstudio.com/items?itemName=framedparadox.mule-aes"><b>Install from the Marketplace</b></a>
+&nbsp;&middot;&nbsp;
+<a href="https://open-vsx.org/extension/framedparadox/mule-aes">Install from Open VSX</a>
+&nbsp;&middot;&nbsp;
+<a href="https://github.com/framedparadox/mulesoft-aes-vscode/blob/main/CHANGELOG.md">Changelog</a>
+&nbsp;&middot;&nbsp;
+<a href="https://github.com/framedparadox/mulesoft-aes-vscode/issues">Report an issue</a>
+</p>
+
+</div>
+
+---
+
+## Overview
 
 A VS Code extension for encrypting and decrypting MuleSoft secure configuration
 properties without leaving your editor. All cryptography runs locally; keys and
 KeyIdentifier names are held only in VS Code's secret storage and are never
 transmitted.
+
+**Install from the command line:**
+
+```bash
+code --install-extension framedparadox.mule-aes
+```
 
 The extension bundles three tools:
 
@@ -47,18 +93,21 @@ The streamlined option for projects using MuleSoft's standard AES configuration.
   is deterministic — identical input always yields identical output.
 - **Output format:** `![base64EncodedString]`, ready to paste into MuleSoft
   config files.
-- **Editor integration:** a toolbar button appears automatically when editing
-  `.yaml`, `.yml`, and `.properties` files.
+- **Decrypt input:** accepts either raw base64 or the wrapped `![encry_val]`
+  format.
+- **Editor integration:** toolbar buttons appear automatically when editing
+  `.yaml`, `.yml`, and `.properties` files — one opens the main MuleSoft AES
+  Encrypt / Decrypt screen, and another opens the whole-file workflow.
 - **Selection actions:** select a value, right-click, and encrypt or decrypt it
   in place with a saved KeyIdentifier or one-off manual key.
 - **Whole-file workflow:** open the file workflow beside the editor to encrypt
-  selected plain fields or decrypt every secure value in the active file.
-  **Select all** / **Clear** buttons adjust the encrypt-mode selection, and a
-  **Refresh** button re-scans the file for changes made outside the panel. Each
-  field row shows its name, value (truncated past 120 characters), and full
-  path with line number, and the KeyIdentifier dropdown shows a masked preview
-  of the selected key — just like the main AES screen. A header button jumps
-  back to the sidebar.
+  or decrypt selected fields in the active file. A **Select all** checkbox
+  (default unchecked) selects or clears every field; encrypt and decrypt both
+  use the same per-field selection. Each field row shows its name, value
+  (truncated past 120 characters), and full path with line number, and the
+  KeyIdentifier dropdown shows a masked preview of the selected key — just like
+  the main AES screen. A logo button in the panel header opens the main AES
+  tool.
 
 | Property        | Value                                           |
 | --------------- | ----------------------------------------------- |
@@ -154,6 +203,7 @@ for fidelity with the MuleSoft generator.
 All output is wrapped in MuleSoft's secure properties format, `![base64String]`.
 When random IVs are enabled, the IV bytes are included at the front of the
 payload (inside the wrapper), keeping the value a single self-contained token.
+Decrypt input accepts either raw base64 or the wrapped `![encry_val]` format.
 
 ---
 
@@ -174,7 +224,8 @@ Both encryption tools draw from the same set of **KeyIdentifiers**, managed from
 the **Settings** screen in the sidebar.
 
 - **Presets** for common environments: DEV, FIT, UAT, PROD.
-- **Custom KeyIdentifiers:** add your own named keys.
+- **Custom KeyIdentifiers:** add your own named keys and drag rows to set the
+  order used in KeyIdentifier dropdowns.
 - **Secure storage:** keys live in VS Code's built-in secret storage and never
   leave the machine.
 - **Visibility toggle:** show or hide keys with partial masking.
@@ -209,8 +260,14 @@ and reopening the panel.
 
 **Install**
 
-1. Open VS Code and go to **Extensions** (`Ctrl+Shift+X` / `Cmd+Shift+X`).
-2. Search for **MuleSoft AES** and click **Install**.
+Pick whichever suits your editor:
+
+| Source                                                                                                        | How                                                                                            |
+| ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=framedparadox.mule-aes)             | Extensions (`Ctrl+Shift+X` / `Cmd+Shift+X`) → search **MuleSoft AES** → **Install**            |
+| Command line                                                                                                  | `code --install-extension framedparadox.mule-aes`                                              |
+| [Open VSX](https://open-vsx.org/extension/framedparadox/mule-aes)                                             | For VSCodium, Gitpod, Eclipse Theia and other non-Microsoft builds                              |
+| [GitHub Releases](https://github.com/framedparadox/mulesoft-aes-vscode/releases)                              | Download the `.vsix` → **Extensions → ⋯ → Install from VSIX…**                                 |
 
 **Use**
 
@@ -232,13 +289,13 @@ and reopening the panel.
 3. Or click the **MuleSoft AES: Encrypt / Decrypt File** button in the editor
    toolbar to open the whole-file workflow panel beside the editor.
 4. In the file workflow, choose a KeyIdentifier (its key shows masked, as on
-   the main AES screen) or input a key manually. Encrypt mode lets you
-   multi-select plain fields, with **Select all** / **Clear** buttons to adjust
-   the selection and a **Refresh** button to re-scan the file; decrypt mode
-   automatically targets all complete `![ ... ]` secure values. Each field row
-   lists its name on the left and its value (truncated past 120 characters)
-   plus full path/line number on the right. An icon button in the panel header
-   jumps back to the sidebar.
+   the main AES screen) or input a key manually. Encrypt and decrypt both let
+   you multi-select fields; use the **Select all** checkbox to select or clear
+   every row (nothing is selected by default). Quoted secure values such as
+   `"![...]"` are detected for decrypt. Each field row lists its name on the
+   left and its value (truncated past 120 characters) plus full path/line
+   number on the right. A logo button in the panel header opens the main AES
+   tool.
 
 ---
 
@@ -253,7 +310,8 @@ and reopening the panel.
 4. The selected value is replaced in place:
    ```yaml
    db:
-     password: ! [EncryptedValueHere]
+     password: ![EncryptedValueHere]
+     connectString: "![EncryptedValueHere]"
    ```
 
 **Encrypt multiple values in a file**
@@ -261,16 +319,16 @@ and reopening the panel.
 1. Open `application.yaml` or `application.properties`.
 2. Click **MuleSoft AES: Encrypt / Decrypt File** in the editor toolbar.
 3. Keep **Encrypt** selected, choose a KeyIdentifier or input a key, and select
-   the fields you want to encrypt.
+   the fields you want to encrypt (or use **Select all**).
 4. Click **Encrypt selected values** to apply all replacements in one edit.
 
-**Decrypt all secure values in a file**
+**Decrypt selected secure values in a file**
 
 1. Open the file workflow beside a YAML or properties editor.
 2. Switch to **Decrypt**.
 3. Choose the same KeyIdentifier or manual key used for encryption.
-4. Click **Decrypt all secure values** to replace every detected `![ ... ]`
-   value in one edit.
+4. Select the secure values to decrypt (or use **Select all**).
+5. Click **Decrypt selected values** to replace them in one edit.
 
 **Encrypt with a non-default algorithm (Secure Properties tool)**
 
@@ -295,21 +353,24 @@ and reopening the panel.
 
 | Command                      | Title                                        | Where                         |
 | ----------------------------- | --------------------------------------------- | ------------------------------ |
-| `aes.encryptDecrypt`         | MuleSoft AES Encrypt / Decrypt               | Sidebar, palette               |
-| `aes.encryptSelection`       | MuleSoft AES: Encrypt Selection              | Editor context menu, palette   |
-| `aes.decryptSelection`       | MuleSoft AES: Decrypt Selection              | Editor context menu, palette   |
-| `aes.fileEncryptDecrypt`     | MuleSoft AES: Encrypt / Decrypt File         | Editor toolbar, palette        |
-| `aesEnhanced.encryptDecrypt` | MuleSoft Secure Properties Encrypt / Decrypt | Sidebar, palette               |
-| `base64.encodeDecode`        | Base64 Encode / Decode                       | Sidebar, palette               |
-| `aes.openSettings`           | MuleSoft AES: Settings                       | Sidebar                        |
+| `aes.encryptDecrypt`         | MuleSoft AES Encrypt / Decrypt               | Sidebar, editor toolbar, palette |
+| `aes.encryptSelection`       | MuleSoft AES: Encrypt Selection              | Editor context menu, palette     |
+| `aes.decryptSelection`       | MuleSoft AES: Decrypt Selection              | Editor context menu, palette     |
+| `aes.fileEncryptDecrypt`     | MuleSoft AES: Encrypt / Decrypt File         | Editor toolbar, palette          |
+| `aesEnhanced.encryptDecrypt` | MuleSoft Secure Properties Encrypt / Decrypt | Sidebar, palette                 |
+| `base64.encodeDecode`        | Base64 Encode / Decode                       | Sidebar, palette                 |
+| `aes.openSettings`           | MuleSoft AES: Settings                       | Sidebar                          |
 
-`aes.fileEncryptDecrypt` is the only editor-toolbar entry. It appears for
-`.yaml`, `.yml`, and `.properties` files and opens the whole-file workflow panel
-beside the editor. `aes.encryptSelection` and `aes.decryptSelection` appear only
-in the editor context menu, and only when text is selected in those same file
-types — there is no separate "selection actions" toolbar command. The Secure
-Properties tool has no editor toolbar button or context menu entry by design;
-open it from the sidebar or Command Palette.
+Two editor-toolbar entries appear for `.yaml`, `.yml`, and `.properties` files:
+`aes.encryptDecrypt` opens the main MuleSoft AES Encrypt / Decrypt screen to the
+right of the editor, and `aes.fileEncryptDecrypt` opens the whole-file
+workflow panel beside the editor. The file workflow header includes an icon
+button that opens the main AES screen.
+`aes.encryptSelection` and `aes.decryptSelection` appear only in the editor
+context menu, and only when text is selected in those same file types — there is
+no separate "selection actions" toolbar command. The Secure Properties tool has
+no editor toolbar button or context menu entry by design; open it from the
+sidebar or Command Palette.
 
 ---
 
@@ -375,12 +436,14 @@ the repository.
 
 ## License
 
-Licensed under the [MIT License](LICENSE).
+Licensed under the
+[MIT License](https://github.com/framedparadox/mulesoft-aes-vscode/blob/main/LICENSE).
 
 ## Links
 
+- **Marketplace:** [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=framedparadox.mule-aes) · [Open VSX](https://open-vsx.org/extension/framedparadox/mule-aes)
 - **Repository:** [framedparadox/mulesoft-aes-vscode](https://github.com/framedparadox/mulesoft-aes-vscode)
 - **Issues:** [Report a bug](https://github.com/framedparadox/mulesoft-aes-vscode/issues)
-- **Changelog:** [CHANGELOG.md](CHANGELOG.md)
+- **Changelog:** [CHANGELOG.md](https://github.com/framedparadox/mulesoft-aes-vscode/blob/main/CHANGELOG.md)
 - **MuleSoft docs:** [Secure Configuration Properties](https://docs.mulesoft.com/mule-runtime/latest/secure-configuration-properties)
 - **Reference tool:** [Secure Properties generator](https://secure-properties-api.us-e1.cloudhub.io/)

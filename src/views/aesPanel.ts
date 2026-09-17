@@ -16,7 +16,6 @@ export class AesPanel {
         this._context = context;
         this._onKeysChanged = onKeysChanged;
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-        this._initHtml();
 
         this._panel.webview.onDidReceiveMessage(
             (message) => {
@@ -40,29 +39,72 @@ export class AesPanel {
         );
     }
 
+    /** Bring the open panel forward without moving it to another editor group. */
+    public static revealCurrent(): void {
+        // reveal() without a column keeps the panel where the user put it;
+        // passing ViewColumn.Beside resolves against the *active* group, which
+        // pushes the panel into a new group when it is already focused.
+        AesPanel.currentPanel?._panel.reveal();
+    }
+
     public static render(context: vscode.ExtensionContext, onKeysChanged?: () => void): void {
-        const column = vscode.ViewColumn.One;
         if (AesPanel.currentPanel) {
-            AesPanel.currentPanel._panel.reveal(column);
+            AesPanel.revealCurrent();
             return;
         }
 
         const panel = vscode.window.createWebviewPanel(
             'aes.encryptDecrypt',
             'MuleSoft AES Encrypt / Decrypt',
-            column,
+            vscode.ViewColumn.Beside,
             {
                 enableScripts: true,
+                // Deliberate: the alternative to retaining the hidden context is
+                // persisting form state through vscode.setState(), which is
+                // disk-backed. These inputs hold plaintext secrets and encryption
+                // keys, so keeping them in memory for the session is the safer
+                // trade. Keys themselves live in SecretStorage, never here.
                 retainContextWhenHidden: true,
                 localResourceRoots: [context.extensionUri],
             }
         );
         panel.iconPath = vscode.Uri.joinPath(context.extensionUri, 'resources', 'icons', 'aes.svg');
-        AesPanel.currentPanel = new AesPanel(panel, context, onKeysChanged);
+        AesPanel._attach(panel, context, onKeysChanged);
+    }
+
+    /**
+     * Take over an existing webview panel (e.g. File Encrypt / Decrypt) and show
+     * the AES Encrypt / Decrypt UI in place instead of opening a second panel.
+     */
+    public static renderReplacing(
+        panel: vscode.WebviewPanel,
+        context: vscode.ExtensionContext,
+        onKeysChanged?: () => void,
+    ): void {
+        if (AesPanel.currentPanel) {
+            // Callers check this first and keep their own panel; guard anyway so
+            // a stray call reveals the open panel instead of closing the caller's.
+            AesPanel.revealCurrent();
+            return;
+        }
+
+        panel.title = 'MuleSoft AES Encrypt / Decrypt';
+        panel.iconPath = vscode.Uri.joinPath(context.extensionUri, 'resources', 'icons', 'aes.svg');
+        AesPanel._attach(panel, context, onKeysChanged);
+    }
+
+    private static _attach(
+        panel: vscode.WebviewPanel,
+        context: vscode.ExtensionContext,
+        onKeysChanged?: () => void,
+    ): void {
+        const instance = new AesPanel(panel, context, onKeysChanged);
+        AesPanel.currentPanel = instance;
+        void instance._initHtml();
     }
 
     public refreshKeyIdentifiers(): void {
-        this._initHtml();
+        void this._initHtml();
     }
 
     public dispose(): void {
@@ -288,7 +330,7 @@ export class AesPanel {
 
         <div class="info">
             <strong>Note:</strong> This tool uses AES/CBC/PKCS5 encryption compatible with MuleSoft secure configuration properties.
-            Encrypted values are wrapped in ![...] format.
+            Encrypted values are wrapped in ![...] format. For decryption, input can be provided as raw base64 or wrapped as ![encry_val].
         </div>
 
         <div class="input-group">
