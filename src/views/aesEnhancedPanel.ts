@@ -307,7 +307,7 @@ export class AESEnhancedPanel {
         <div class="info">
             <strong>Note:</strong> This tool replicates the MuleSoft secure configuration properties generator.
             Choose an algorithm, cipher mode (state) and whether to use random IVs. The defaults (AES / CBC, no random IV)
-            match the MuleSoft AES/CBC/PKCS5 behaviour. Encrypted values are wrapped in ![...] format.
+            match the MuleSoft AES/CBC/PKCS5 behaviour. Encrypted values are wrapped in ![...] format. For decryption, input can be provided as raw base64 or wrapped as ![encry_val].
         </div>
 
         <div class="input-group">

@@ -330,7 +330,7 @@ export class AesPanel {
 
         <div class="info">
             <strong>Note:</strong> This tool uses AES/CBC/PKCS5 encryption compatible with MuleSoft secure configuration properties.
-            Encrypted values are wrapped in ![...] format.
+            Encrypted values are wrapped in ![...] format. For decryption, input can be provided as raw base64 or wrapped as ![encry_val].
         </div>
 
         <div class="input-group">

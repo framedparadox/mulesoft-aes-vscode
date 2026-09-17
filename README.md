@@ -1,6 +1,7 @@
 <div align="center">
 
 <img src="https://raw.githubusercontent.com/framedparadox/mulesoft-aes-vscode/main/resources/icon.png" alt="MuleSoft AES" width="112" height="112" />
+<br/>
 
 <h1>MuleSoft AES &amp; Secure Properties</h1>
 
@@ -92,6 +93,8 @@ The streamlined option for projects using MuleSoft's standard AES configuration.
   is deterministic — identical input always yields identical output.
 - **Output format:** `![base64EncodedString]`, ready to paste into MuleSoft
   config files.
+- **Decrypt input:** accepts either raw base64 or the wrapped `![encry_val]`
+  format.
 - **Editor integration:** toolbar buttons appear automatically when editing
   `.yaml`, `.yml`, and `.properties` files — one opens the main MuleSoft AES
   Encrypt / Decrypt screen, and another opens the whole-file workflow.
@@ -200,6 +203,7 @@ for fidelity with the MuleSoft generator.
 All output is wrapped in MuleSoft's secure properties format, `![base64String]`.
 When random IVs are enabled, the IV bytes are included at the front of the
 payload (inside the wrapper), keeping the value a single self-contained token.
+Decrypt input accepts either raw base64 or the wrapped `![encry_val]` format.
 
 ---
 
@@ -306,7 +310,8 @@ Pick whichever suits your editor:
 4. The selected value is replaced in place:
    ```yaml
    db:
-     password: ! [EncryptedValueHere]
+     password: ![EncryptedValueHere]
+     connectString: "![EncryptedValueHere]"
    ```
 
 **Encrypt multiple values in a file**
