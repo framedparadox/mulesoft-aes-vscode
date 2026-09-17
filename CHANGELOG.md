@@ -7,6 +7,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project uses the version numbers from `package.json` (not strict
 SemVer, since this is a pre-1.0 VS Code extension).
 
+## [0.0.8]
+
+### Added
+
+- Accessible names on whole-file field checkboxes (`aria-label` from field
+  path/name).
+- Keyboard **Move up** / **Move down** controls for KeyIdentifier reorder in
+  Settings (in addition to drag-and-drop).
+
+### Fixed
+
+- Whole-file panel: ignore stale `_initHtml` completions after handing the
+  webview to the main AES screen (render-generation token).
+- Whole-file panel: tag field refresh responses with operation/`requestId`,
+  drop stale Encrypt/Decrypt toggles, and keep Apply disabled until the
+  matching refresh arrives.
+
+### Changed
+
+- Bumped extension version to `0.0.8`.
+
+---
+
 ## [0.0.7]
 
 ### Added

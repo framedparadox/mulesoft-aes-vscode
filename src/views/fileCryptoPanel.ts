@@ -29,6 +29,7 @@ interface ApplyMessage {
 interface RefreshMessage {
   command: "refreshFields";
   operation: FileCryptoOperation;
+  requestId?: number;
 }
 
 interface OpenAesPanelMessage {
@@ -54,6 +55,8 @@ export class FileCryptoPanel {
   private readonly _context: vscode.ExtensionContext;
   private _documentUri: vscode.Uri;
   private _disposables: vscode.Disposable[] = [];
+  /** Bumped to invalidate in-flight `_initHtml` / `_postFields` completions. */
+  private _renderGeneration = 0;
 
   private constructor(
     panel: vscode.WebviewPanel,
@@ -72,7 +75,7 @@ export class FileCryptoPanel {
           return;
         }
         if (message.command === "refreshFields") {
-          void this._postFields(message.operation);
+          void this._postFields(message.operation, "", message.requestId);
           return;
         }
         if (message.command === "apply") {
@@ -136,6 +139,7 @@ export class FileCryptoPanel {
   }
 
   public dispose(): void {
+    this._renderGeneration += 1;
     FileCryptoPanel.currentPanel = undefined;
     this._panel.dispose();
     while (this._disposables.length) {
@@ -152,6 +156,9 @@ export class FileCryptoPanel {
       return;
     }
 
+    // Invalidate any in-flight `_initHtml` so a late completion cannot overwrite
+    // the AES screen that `renderReplacing` is about to paint on this webview.
+    this._renderGeneration += 1;
     const panel = this._panel;
     FileCryptoPanel.currentPanel = undefined;
     while (this._disposables.length) {
@@ -163,17 +170,24 @@ export class FileCryptoPanel {
   }
 
   private async _initHtml(): Promise<void> {
+    const generation = ++this._renderGeneration;
     const webview = this._panel.webview;
     const nonce = createNonce();
     const csp = contentSecurityPolicy(webview, nonce);
     const headerIcon = iconUri(webview, this._context.extensionUri, "aes2.svg");
     const muleAesIcon = iconUri(webview, this._context.extensionUri, "aes.svg");
     const keyIdentifiers = await getAesKeyIdentifiers(this._context);
+    if (generation !== this._renderGeneration) {
+      return;
+    }
     const configuredKeyIdentifiers = keyIdentifiers.filter(
       (entry) =>
         entry.keyIdentifier.trim().length > 0 && entry.key.trim().length > 0,
     );
     const fields = await this._fieldsForOperation("encrypt");
+    if (generation !== this._renderGeneration) {
+      return;
+    }
     const state = serializeForScript({
       fields: fields.map(toViewModel),
     });
@@ -185,6 +199,9 @@ export class FileCryptoPanel {
       )
       .join("");
 
+    if (generation !== this._renderGeneration) {
+      return;
+    }
     this._panel.webview.html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -304,6 +321,11 @@ export class FileCryptoPanel {
         .mode-row button:hover, .actions button:hover {
             background: var(--vscode-button-hoverBackground);
             color: var(--vscode-button-foreground);
+        }
+        .actions button:disabled {
+            opacity: 0.55;
+            cursor: default;
+            pointer-events: none;
         }
         .fields {
             border: 1px solid var(--vscode-input-border);
@@ -462,6 +484,9 @@ export class FileCryptoPanel {
         const initialState = ${state};
         let operation = 'encrypt';
         let fields = initialState.fields;
+        let fieldsRequestId = 0;
+        let pendingFieldsRequestId = 0;
+        let refreshInFlight = false;
 
         const keyIdentifier = document.getElementById('keyIdentifier');
         const manualKey = document.getElementById('manualKey');
@@ -476,6 +501,22 @@ export class FileCryptoPanel {
         const selectAllCheckbox = document.getElementById('selectAllCheckbox');
         const message = document.getElementById('message');
 
+        function setApplyEnabled(enabled) {
+            applyBtn.disabled = !enabled;
+        }
+
+        function requestFieldsRefresh() {
+            pendingFieldsRequestId = ++fieldsRequestId;
+            refreshInFlight = true;
+            setApplyEnabled(false);
+            showInfo('Refreshing fields...');
+            vscode.postMessage({
+                command: 'refreshFields',
+                operation,
+                requestId: pendingFieldsRequestId,
+            });
+        }
+
         function setOperation(nextOperation) {
             operation = nextOperation;
             encryptMode.classList.toggle('active', operation === 'encrypt');
@@ -484,8 +525,7 @@ export class FileCryptoPanel {
             fieldsLabel.textContent = operation === 'encrypt' ? 'Plain values' : 'Secure values';
             selectAllCheckbox.checked = false;
             selectAllCheckbox.indeterminate = false;
-            showInfo('Refreshing fields...');
-            vscode.postMessage({ command: 'refreshFields', operation });
+            requestFieldsRefresh();
         }
 
         let isKeyVisible = true;
@@ -580,6 +620,7 @@ export class FileCryptoPanel {
                 checkbox.type = 'checkbox';
                 checkbox.value = field.id;
                 checkbox.checked = false;
+                checkbox.setAttribute('aria-label', 'Select ' + (field.path || field.name));
                 checkbox.addEventListener('change', syncSelectAllCheckbox);
                 selector.appendChild(checkbox);
 
@@ -683,13 +724,15 @@ export class FileCryptoPanel {
             selectAllCheckbox.indeterminate = false;
         });
         document.getElementById('refreshBtn').addEventListener('click', () => {
-            showInfo('Refreshing fields...');
-            vscode.postMessage({ command: 'refreshFields', operation });
+            requestFieldsRefresh();
         });
         openAesBtn.addEventListener('click', () => {
             vscode.postMessage({ command: 'openAesPanel' });
         });
         applyBtn.addEventListener('click', () => {
+            if (applyBtn.disabled) {
+                return;
+            }
             showInfo(operation === 'encrypt' ? 'Encrypting selected values...' : 'Decrypting selected values...');
             vscode.postMessage({
                 command: 'apply',
@@ -702,28 +745,46 @@ export class FileCryptoPanel {
         window.addEventListener('message', (event) => {
             const payload = event.data;
             if (payload.command === 'fields') {
+                // Ignore stale responses from an earlier operation/refresh.
+                if (
+                    (payload.requestId !== undefined && payload.requestId !== pendingFieldsRequestId) ||
+                    (payload.operation !== undefined && payload.operation !== operation)
+                ) {
+                    return;
+                }
                 fields = payload.fields;
                 selectAllCheckbox.checked = false;
                 selectAllCheckbox.indeterminate = false;
                 renderFields();
+                refreshInFlight = false;
+                setApplyEnabled(true);
                 showInfo(payload.message || '');
                 return;
             }
             if (payload.command === 'applied') {
+                if (payload.operation !== undefined && payload.operation !== operation) {
+                    return;
+                }
                 fields = payload.fields;
                 selectAllCheckbox.checked = false;
                 selectAllCheckbox.indeterminate = false;
                 renderFields();
+                setApplyEnabled(true);
                 showSuccess(payload.message);
                 return;
             }
             if (payload.command === 'error') {
+                // Re-enable Apply after apply failures; keep disabled while a refresh is pending.
+                if (!refreshInFlight) {
+                    setApplyEnabled(true);
+                }
                 showError(payload.message);
             }
         });
 
         applyKeyIdentifierSelection(keyIdentifier.value);
         renderFields();
+        setApplyEnabled(true);
     </script>
 </body>
 </html>`;
@@ -732,10 +793,17 @@ export class FileCryptoPanel {
   private async _postFields(
     operation: FileCryptoOperation,
     message = "",
+    requestId?: number,
   ): Promise<void> {
+    const generation = this._renderGeneration;
     const fields = await this._fieldsForOperation(operation);
+    if (generation !== this._renderGeneration) {
+      return;
+    }
     await this._panel.webview.postMessage({
       command: "fields",
+      operation,
+      requestId,
       fields: fields.map(toViewModel),
       message,
     });
@@ -818,6 +886,7 @@ export class FileCryptoPanel {
       );
       await this._panel.webview.postMessage({
         command: "applied",
+        operation: message.operation,
         fields: refreshedFields.map(toViewModel),
         message: `${result.replacements.length} value${result.replacements.length === 1 ? "" : "s"} ${message.operation}ed.`,
       });
