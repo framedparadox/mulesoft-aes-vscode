@@ -1,0 +1,943 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>MuleSoft AES &amp; Secure Properties for VS Code</title>
+  <meta name="description" content="Encrypt and decrypt MuleSoft secure configuration properties without leaving VS Code. AES-128/256, Blowfish, DES, 3DES, RC2 and RC4, in-place YAML and .properties editing, and keys stored in your OS keychain. Free, open source, fully local.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <link rel="canonical" href="https://framedparadox.github.io/mulesoft-aes-vscode/">
+  <link rel="icon" href="assets/img/aes.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/img/icon.png" type="image/png" sizes="128x128">
+  <link rel="apple-touch-icon" href="assets/img/icon.png">
+  <link rel="manifest" href="site.webmanifest">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MuleSoft AES for VS Code">
+  <meta property="og:title" content="MuleSoft AES & Secure Properties for VS Code">
+  <meta property="og:description" content="Encrypt and decrypt MuleSoft secure properties right inside your YAML and .properties files. Everything runs locally.">
+  <meta property="og:url" content="https://framedparadox.github.io/mulesoft-aes-vscode/">
+  <meta property="og:image" content="https://framedparadox.github.io/mulesoft-aes-vscode/assets/img/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="MuleSoft AES for VS Code: secrets, sealed in place.">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "MuleSoft AES & Secure Properties Encrypt / Decrypt",
+    "applicationCategory": "DeveloperApplication",
+    "applicationSubCategory": "Visual Studio Code extension",
+    "operatingSystem": "Windows, macOS, Linux",
+    "softwareVersion": "0.0.8",
+    "softwareRequirements": "Visual Studio Code 1.105.0 or later",
+    "description": "Encrypt and decrypt MuleSoft secure configuration properties inside VS Code, with AES, Blowfish, DES, DESede, RC2 and RC4 support and OS keychain key storage.",
+    "license": "https://opensource.org/licenses/MIT",
+    "downloadUrl": "https://marketplace.visualstudio.com/items?itemName=framedparadox.mule-aes",
+    "installUrl": "https://marketplace.visualstudio.com/items?itemName=framedparadox.mule-aes",
+    "sameAs": [
+      "https://github.com/framedparadox/mulesoft-aes-vscode",
+      "https://open-vsx.org/extension/framedparadox/mule-aes"
+    ],
+    "author": { "@type": "Organization", "name": "framedparadox" },
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.replace('no-js', 'js');
+      try {
+        var t = localStorage.getItem('mule-aes-theme');
+        if (t === 'light' || t === 'dark') d.dataset.theme = t;
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="assets/css/site.css">
+  <script src="assets/js/site.js" defer></script>
+  <script src="assets/js/home.js" defer></script>
+</head>
+<body id="top">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ================================================================ -->
+  <!-- Navigation                                                        -->
+  <!-- ================================================================ -->
+  <header class="nav" data-open="false">
+    <nav class="nav-inner" aria-label="Primary">
+      <a class="brand" href="./" aria-label="MuleSoft AES home">
+        <img src="assets/img/icon.png" alt="" width="26" height="26">
+        <span>MuleSoft AES</span>
+      </a>
+      <ul class="nav-links" id="nav-links" data-spy>
+        <li><a href="#workflow">Features</a></li>
+        <li><a href="#try">Try it</a></li>
+        <li><a href="#algorithms">Algorithms</a></li>
+        <li><a href="#privacy">Privacy</a></li>
+        <li><a href="docs.html">Docs</a></li>
+        <li><a href="changelog.html">Changelog</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-label="Switch appearance">
+          <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1Z"/></svg>
+          <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+        </button>
+        <a class="btn btn--sm" href="#install">Install</a>
+        <button class="icon-btn menu-toggle" type="button" aria-controls="nav-links" aria-expanded="false" aria-label="Menu">
+          <span class="bars" aria-hidden="true"><span class="bar"></span><span class="bar"></span></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <!-- ================================================================ -->
+    <!-- Hero                                                              -->
+    <!-- ================================================================ -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="wrap">
+        <img class="hero-icon" src="assets/img/icon.png" alt="" width="96" height="96" data-reveal>
+        <p class="eyebrow" data-reveal style="--d:1">MuleSoft AES &amp; Secure Properties for VS Code</p>
+        <h1 class="display" id="hero-title" data-reveal style="--d:2">Secrets,<br> <span class="grad-text">sealed in&nbsp;place.</span></h1>
+        <p class="intro" data-reveal style="--d:3"><strong>Encrypt and decrypt MuleSoft secure configuration properties</strong> right inside your YAML and <code>.properties</code> files. No generator tabs. No copy‑paste round trips. Nothing ever leaves your machine.</p>
+        <div class="cta-row" data-reveal style="--d:4">
+          <a class="btn btn--lg" href="https://marketplace.visualstudio.com/items?itemName=framedparadox.mule-aes" rel="noopener">Install for VS Code</a>
+          <a class="link-arrow" href="#try">Try it in your browser</a>
+        </div>
+        <p class="hero-meta" data-reveal style="--d:5"><span>Free</span><span>Open source (MIT)</span><span>Version 0.0.8</span></p>
+      </div>
+
+      <div class="wrap wrap-wide">
+        <div class="hero-stage" data-hero>
+          <div class="vs-window" role="img" aria-label="VS Code with application.yaml open. The password value is selected, MuleSoft AES: Encrypt Selection is chosen from the right-click menu, the DEV KeyIdentifier is picked, and the value is replaced in place with an encrypted ![…] token.">
+            <div class="vs-titlebar" aria-hidden="true">
+              <span class="vs-lights"><i></i><i></i><i></i></span>
+              <span class="vs-search"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3.5 3.5"/></svg>orders-api</span>
+            </div>
+            <div class="vs-workbench" aria-hidden="true">
+              <div class="vs-activity">
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M14 3H8.5A1.5 1.5 0 0 0 7 4.5v11A1.5 1.5 0 0 0 8.5 17h8a1.5 1.5 0 0 0 1.5-1.5V7z"/><path d="M14 3v4h4"/><path d="M4 7.5v12A1.5 1.5 0 0 0 5.5 21H15"/></svg></span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="13.5" cy="10.5" r="6"/><path d="m9 15-6 6"/></svg></span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="5.5" r="2"/><circle cx="6.5" cy="18.5" r="2"/><circle cx="17.5" cy="8.5" r="2"/><path d="M6.5 7.5v9M17.5 10.5c0 4.5-11 2.5-11 6"/></svg></span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M8 5v14l11-7z"/></svg></span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M4 10.5h6v6H4zM10 16.5h6v6h-6zM4 16.5h6v6H4zM15.5 2.8l4.2 4.2-4.2 4.2-4.2-4.2z"/></svg></span>
+                <span class="is-active"><img src="assets/img/mule-aes.svg" alt=""></span>
+              </div>
+
+              <div class="vs-sidebar">
+                <div class="vs-sidebar-title"><span>MuleSoft AES</span><span>···</span></div>
+                <div class="vs-tools">
+                  <div class="vs-tool"><img src="assets/img/aes.svg" alt=""><span><b>MuleSoft AES Encrypt / Decrypt</b><small>Encrypt or decrypt text using AES</small></span></div>
+                  <div class="vs-tool"><img src="assets/img/aes-plus.svg" alt=""><span><b>MuleSoft Secure Properties Encrypt / Decrypt</b><small>Encrypt or decrypt with multiple algorithms</small></span></div>
+                  <div class="vs-tool"><img src="assets/img/base64.svg" alt=""><span><b>Base64 Encode / Decode</b><small>Encode or decode text and files</small></span></div>
+                  <div class="vs-tool"><img src="assets/img/settings.svg" alt=""><span><b>Settings</b><small>Configure AES key identifiers</small></span></div>
+                </div>
+              </div>
+
+              <div class="vs-editor">
+                <div class="vs-tabs">
+                  <div class="vs-tab"><svg class="vs-tab-icon" viewBox="0 0 16 16"><path fill="#a074c4" d="M7 2.5h2v7H7zM7 11.5h2v2H7z"/></svg>application.yaml</div>
+                  <div class="vs-tab is-muted">pom.xml</div>
+                  <div class="vs-editor-actions">
+                    <span class="is-mule"><img src="assets/img/aes.svg" alt=""></span>
+                    <span class="is-mule"><img src="assets/img/aes2.svg" alt=""></span>
+                    <span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.1"><rect x="2" y="2.5" width="12" height="11" rx="1"/><path d="M8 2.5v11"/></svg></span>
+                    <span><svg viewBox="0 0 16 16" fill="currentColor"><circle cx="3.5" cy="8" r="1.1"/><circle cx="8" cy="8" r="1.1"/><circle cx="12.5" cy="8" r="1.1"/></svg></span>
+                  </div>
+                </div>
+                <div class="vs-breadcrumbs">src <i>›</i> main <i>›</i> resources <i>›</i> application.yaml <i>›</i> db <i>›</i> password</div>
+                <div class="vs-code">
+                  <span class="l"><span class="c"># Orders API · secure configuration</span></span>
+                  <span class="l"><span class="k">http</span><span class="p">:</span></span>
+                  <span class="l">  <span class="k">listener</span><span class="p">:</span></span>
+                  <span class="l">    <span class="k">host</span><span class="p">: </span><span class="s">"0.0.0.0"</span></span>
+                  <span class="l">    <span class="k">port</span><span class="p">: </span><span class="s">"8081"</span></span>
+                  <span class="l"></span>
+                  <span class="l"><span class="k">db</span><span class="p">:</span></span>
+                  <span class="l">  <span class="k">host</span><span class="p">: </span><span class="s">"orders-db.internal"</span></span>
+                  <span class="l">  <span class="k">user</span><span class="p">: </span><span class="s">"svc_orders"</span></span>
+                  <span class="l">  <span class="k">password</span><span class="p">: </span><span class="s">"<span class="vs-val" data-hero-value data-plain="myDatabasePassword" data-cipher="![IC/nBJeEeAJg7vYzxVCcYJ+3DJZpthwL114HH38lEhM=]">myDatabasePassword</span>"</span></span>
+                  <span class="l"></span>
+                  <span class="l"><span class="k">salesforce</span><span class="p">:</span></span>
+                  <span class="l">  <span class="k">username</span><span class="p">: </span><span class="s">"integration@acme.com"</span></span>
+                  <span class="l">  <span class="k">token</span><span class="p">: </span><span class="s">"<span class="enc">![l80UyfrpEt942iylgLFZvvkawIqA1iSEe8NKtRDGI8E=]</span>"</span></span>
+                  <span class="l">  <span class="k">timeout</span><span class="p">: </span><span class="s">"30000"</span></span>
+                </div>
+
+                <div class="vs-menu" data-hero-menu>
+                  <div class="mi opt">Go to Definition<kbd>F12</kbd></div>
+                  <div class="mi opt">Find All References<kbd>⇧⌥F12</kbd></div>
+                  <hr class="opt">
+                  <div class="mi">Change All Occurrences<kbd>⌘F2</kbd></div>
+                  <div class="mi">Format Document<kbd>⇧⌥F</kbd></div>
+                  <div class="mi" data-hero-item>MuleSoft AES: Encrypt Selection</div>
+                  <div class="mi">MuleSoft AES: Decrypt Selection</div>
+                  <hr>
+                  <div class="mi">Cut<kbd>⌘X</kbd></div>
+                  <div class="mi">Copy<kbd>⌘C</kbd></div>
+                  <div class="mi">Paste<kbd>⌘V</kbd></div>
+                  <hr class="opt">
+                  <div class="mi opt">Command Palette…<kbd>⇧⌘P</kbd></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="vs-quickpick" data-hero-qp aria-hidden="true">
+              <div class="vs-qp-input">Select a KeyIdentifier or input key</div>
+              <ul>
+                <li class="is-active">DEV <small>KeyIdentifier</small></li>
+                <li>FIT <small>KeyIdentifier</small></li>
+                <li>UAT <small>KeyIdentifier</small></li>
+                <li>PROD <small>KeyIdentifier</small></li>
+                <li>Input key manually <small>Use a key for this operation only</small></li>
+              </ul>
+            </div>
+
+            <div class="vs-status" aria-hidden="true">
+              <span class="remote"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="m6 4-4 4 4 4M10 4l4 4-4 4"/></svg></span>
+              <span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" style="display:inline;vertical-align:-2px;margin-right:4px"><circle cx="4.5" cy="3.5" r="1.5"/><circle cx="4.5" cy="12.5" r="1.5"/><circle cx="11.5" cy="5.5" r="1.5"/><path d="M4.5 5v6M11.5 7c0 3-7 2-7 4"/></svg>main</span>
+              <span>⊗ 0 ⚠ 0</span>
+              <span class="right"><span data-hero-pos>Ln 10, Col 14</span><span>Spaces: 2</span><span>UTF-8</span><span>YAML</span></span>
+            </div>
+          </div>
+
+          <div class="hero-replay" data-hero-replay>
+            <button class="btn btn--sm" type="button">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 8a5.5 5.5 0 1 0 1.7-4"/><path d="M2.5 2.5V5.5h3"/></svg>
+              Replay
+            </button>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="stat" data-reveal><b>3</b><span>tools in one sidebar</span></div>
+          <div class="stat" data-reveal style="--d:1"><b>6</b><span>cipher algorithms</span></div>
+          <div class="stat" data-reveal style="--d:2"><b>4</b><span>block cipher modes</span></div>
+          <div class="stat" data-reveal style="--d:3"><b>0</b><span>network requests. Ever.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- Editor workflow                                                   -->
+    <!-- ================================================================ -->
+    <section class="section" id="workflow" aria-labelledby="workflow-title">
+      <div class="wrap wrap-wide">
+        <div class="section-head" data-reveal>
+          <span class="eyebrow">In the editor</span>
+          <h2 class="headline" id="workflow-title">Encryption that lives where your config does.</h2>
+          <p class="intro">Open a <code>.yaml</code>, <code>.yml</code> or <code>.properties</code> file and the tools are already there. <strong>Select a value, right‑click, done.</strong> The plain text is replaced in place with a ready‑to‑ship <code>![…]</code> token.</p>
+        </div>
+
+        <div class="bento">
+          <article class="tile tile--wide" data-reveal>
+            <div class="tile-split">
+              <div>
+                <span class="eyebrow">Whole-file workflow</span>
+                <h3>Encrypt a dozen values in a single edit.</h3>
+                <p>Open the file workflow from the editor toolbar and every plain value is listed with its <strong>name, path and line number</strong>. Tick the ones you want and apply them together. Decrypt works exactly the same way.</p>
+                <p class="fineprint" style="margin-top:20px">Go ahead: tick a few rows, then press <em>Encrypt selected values</em>.</p>
+              </div>
+              <div class="tile-visual">
+                <div class="panel-shot" data-filepanel>
+                  <header>
+                    <img src="assets/img/aes2.svg" alt="">
+                    <span>MuleSoft AES File Encrypt / Decrypt</span>
+                    <span class="open-aes" title="Open MuleSoft AES Encrypt / Decrypt"><img src="assets/img/aes.svg" alt=""></span>
+                  </header>
+                  <div class="panel-body">
+                    <div class="panel-row">
+                      <div>
+                        <span class="panel-label">Operation</span>
+                        <span class="vs-seg"><span class="on">Encrypt</span><span>Decrypt</span></span>
+                      </div>
+                      <div>
+                        <span class="panel-label">Key Identifier</span>
+                        <span class="vs-field sans">DEV <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m4 6 4 4 4-4"/></svg></span>
+                      </div>
+                    </div>
+                    <div>
+                      <span class="panel-label">Input key</span>
+                      <span class="vs-field">DEV-7************************5Yj</span>
+                    </div>
+                    <div>
+                      <div class="fields-head">
+                        <label><input class="vs-check" type="checkbox" data-fp-all aria-label="Select all fields"> Select all</label>
+                        <span>Plain values</span>
+                        <span class="count" data-fp-count>0 of 4 selected</span>
+                      </div>
+                      <ul class="field-list">
+                        <li class="field-row">
+                          <input class="vs-check" type="checkbox" aria-label="db.host, line 8">
+                          <span class="fname">host</span>
+                          <span class="fcell"><span class="fval" data-plain="orders-db.internal" data-cipher="![mHPNkkuGwhxBysYx6G9TKpLmdzl+wR8ct3rvPS2mxDc=]">orders-db.internal</span><span class="fpath">db.host · line 8</span></span>
+                        </li>
+                        <li class="field-row">
+                          <input class="vs-check" type="checkbox" aria-label="db.user, line 9">
+                          <span class="fname">user</span>
+                          <span class="fcell"><span class="fval" data-plain="svc_orders" data-cipher="![nqLCUVbLN2MRvdLqlg9NVA==]">svc_orders</span><span class="fpath">db.user · line 9</span></span>
+                        </li>
+                        <li class="field-row">
+                          <input class="vs-check" type="checkbox" aria-label="db.password, line 10">
+                          <span class="fname">password</span>
+                          <span class="fcell"><span class="fval" data-plain="myDatabasePassword" data-cipher="![IC/nBJeEeAJg7vYzxVCcYJ+3DJZpthwL114HH38lEhM=]">myDatabasePassword</span><span class="fpath">db.password · line 10</span></span>
+                        </li>
+                        <li class="field-row">
+                          <input class="vs-check" type="checkbox" aria-label="salesforce.username, line 13">
+                          <span class="fname">username</span>
+                          <span class="fcell"><span class="fval" data-plain="integration@acme.com" data-cipher="![gIsyzKqc6R7DeBILu0nr899PJFWMbYQe5Whl3EuSGWY=]">integration@acme.com</span><span class="fpath">salesforce.username · line 13</span></span>
+                        </li>
+                      </ul>
+                    </div>
+                    <button class="vs-primary" type="button" data-fp-apply disabled>Encrypt selected values</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="tile" data-reveal>
+            <span class="eyebrow">Selection actions</span>
+            <h3>Right‑click. Encrypted.</h3>
+            <p>Select any value and choose <strong>Encrypt Selection</strong> or <strong>Decrypt Selection</strong>. Pick a saved KeyIdentifier, or type a one‑off key that’s never stored.</p>
+            <div class="tile-visual">
+              <div class="menu-shot" aria-hidden="true">
+                <div class="mi is-dim">Change All Occurrences<kbd>⌘F2</kbd></div>
+                <div class="mi is-dim">Format Document<kbd>⇧⌥F</kbd></div>
+                <div class="mi is-hover">MuleSoft AES: Encrypt Selection</div>
+                <div class="mi">MuleSoft AES: Decrypt Selection</div>
+                <hr>
+                <div class="mi is-dim">Cut<kbd>⌘X</kbd></div>
+                <div class="mi is-dim">Copy<kbd>⌘C</kbd></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="tile" data-reveal style="--d:1">
+            <span class="eyebrow">Editor toolbar</span>
+            <h3>Two buttons, exactly where you need them.</h3>
+            <p>They appear automatically on YAML and properties files, and open their panels right beside your editor.</p>
+            <div class="tile-visual">
+              <div class="toolbar-shot" aria-hidden="true">
+                <span class="file"><svg viewBox="0 0 16 16" width="14" height="14"><path fill="#a074c4" d="M7 2.5h2v7H7zM7 11.5h2v2H7z"/></svg>application.properties</span>
+                <span class="tb is-mule"><img src="assets/img/aes.svg" alt=""></span>
+                <span class="tb is-mule"><img src="assets/img/aes2.svg" alt=""></span>
+                <span class="tb"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.1"><rect x="2" y="2.5" width="12" height="11" rx="1"/><path d="M8 2.5v11"/></svg></span>
+              </div>
+              <div class="toolbar-legend">
+                <div><img src="assets/img/aes.svg" alt=""><span><b>Encrypt / Decrypt</b> opens the main AES screen.</span></div>
+                <div><img src="assets/img/aes2.svg" alt=""><span><b>Encrypt / Decrypt File</b> opens the whole-file workflow.</span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="tile" data-reveal>
+            <span class="eyebrow">Smart detection</span>
+            <h3>Quoted? Bare? Handled.</h3>
+            <p>YAML needs quotes around <code>![…]</code>, and plenty of <code>.properties</code> files add them anyway. Double‑quoted, single‑quoted and bare values are all recognised for decrypt.</p>
+            <div class="tile-visual">
+              <div class="token-demo" aria-label="Examples of recognised secure values">
+                <div><span class="tag">FOUND</span><code>password: "![IC/nBJeEeAJg7vYzxVCcYJ+3DJZpthwL114HH38lEhM=]"</code></div>
+                <div><span class="tag">FOUND</span><code>token: '![l80UyfrpEt942iylgLFZvvkawIqA1iSEe8NKtRDGI8E=]'</code></div>
+                <div><span class="tag">FOUND</span><code>db.user=![nqLCUVbLN2MRvdLqlg9NVA==]</code></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="tile" data-reveal style="--d:1">
+            <span class="eyebrow">Output format</span>
+            <h3>Paste‑ready, every time.</h3>
+            <p>Every result is wrapped in MuleSoft’s secure‑properties format, ready for your <code>${secure::…}</code> placeholders. Decrypt takes a wrapped token or raw Base64.</p>
+            <div class="tile-visual">
+              <div class="token-demo">
+                <div><code><span style="color:var(--text-3)">db.password=</span>![IC/nBJeEeAJg7vYzxVCcYJ+3DJZpthwL114HH38lEhM=]</code></div>
+                <div><code><span style="color:var(--text-3)">&lt;db:config password=</span>"${secure::db.password}"<span style="color:var(--text-3)">/&gt;</span></code></div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- Three tools                                                       -->
+    <!-- ================================================================ -->
+    <section class="section section--alt" id="tools" aria-labelledby="tools-title">
+      <div class="wrap wrap-wide">
+        <div class="section-head center" data-reveal>
+          <span class="eyebrow">The toolkit</span>
+          <h2 class="headline" id="tools-title">Three tools. One sidebar.</h2>
+          <p class="intro">Click the MuleSoft AES icon in the activity bar and <strong>everything is one click away</strong>, all sharing the same keys.</p>
+        </div>
+
+        <div class="tools">
+          <article class="tool-card" data-tone="aes" data-reveal>
+            <img src="assets/img/aes.svg" alt="" width="72" height="72">
+            <span class="eyebrow">For everyday values</span>
+            <h3>MuleSoft AES Encrypt / Decrypt</h3>
+            <p>The fast path for MuleSoft’s standard setup, wired straight into the editor.</p>
+            <ul class="spec-list">
+              <li><span>Algorithm</span><span>AES-128 / AES-256</span></li>
+              <li><span>Mode</span><span>CBC, PKCS5 padding</span></li>
+              <li><span>IV</span><span>Derived from key</span></li>
+              <li><span>Output</span><span>Deterministic</span></li>
+            </ul>
+            <p class="note">Key length picks the strength: exactly 32 characters selects AES-256.</p>
+          </article>
+
+          <article class="tool-card" data-tone="sp" data-reveal style="--d:1">
+            <img src="assets/img/aes-plus.svg" alt="" width="72" height="72">
+            <span class="eyebrow">For everything else</span>
+            <h3>Secure Properties Encrypt / Decrypt</h3>
+            <p>Full parity with MuleSoft’s Secure Properties generator, with no browser tab required.</p>
+            <ul class="spec-list">
+              <li><span>Algorithms</span><span>6, including 3DES</span></li>
+              <li><span>Modes</span><span>CBC, CFB, ECB, OFB</span></li>
+              <li><span>IV</span><span>Derived or random</span></li>
+              <li><span>Defaults</span><span>Match the AES tool</span></li>
+            </ul>
+            <p class="note">At its defaults it’s byte-for-byte identical to the AES tool, so the two are interchangeable.</p>
+          </article>
+
+          <article class="tool-card" data-tone="b64" data-reveal style="--d:2">
+            <img src="assets/img/base64.svg" alt="" width="72" height="72">
+            <span class="eyebrow">For quick conversions</span>
+            <h3>Base64 Encode / Decode</h3>
+            <p>The utility you reach for ten times a day, now in the same place as your keys.</p>
+            <ul class="spec-list">
+              <li><span>Input</span><span>Text or files</span></li>
+              <li><span>Files</span><span>Drag and drop or browse</span></li>
+              <li><span>Result</span><span>One-click copy</span></li>
+              <li><span>Network</span><span>None</span></li>
+            </ul>
+            <p class="note">In file mode, Decode reads the Base64 from the output box, so you can paste or edit it first.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- Live demo                                                         -->
+    <!-- ================================================================ -->
+    <section class="section" id="try" aria-labelledby="try-title">
+      <div class="wrap wrap-wide">
+        <div class="section-head center" data-reveal>
+          <span class="eyebrow">Live demo</span>
+          <h2 class="headline" id="try-title">Try it right here.</h2>
+          <p class="intro">This is <strong>the same AES routine the extension runs</strong>, reimplemented on your browser’s Web Crypto API. Type, and the token updates as you go. Nothing is sent anywhere.</p>
+        </div>
+
+        <div class="demo" data-demo data-reveal>
+          <div class="demo-pane">
+            <div class="demo-head">
+              <h3>AES Encrypt / Decrypt</h3>
+              <div class="seg" data-demo-mode role="group" aria-label="Operation">
+                <button type="button" data-mode="encrypt" aria-pressed="true">Encrypt</button>
+                <button type="button" data-mode="decrypt" aria-pressed="false">Decrypt</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="demo-key">Encryption key <small data-demo-count>0 / 32</small></label>
+              <div class="input-wrap">
+                <input class="input mono" id="demo-key" type="password" autocomplete="off" spellcheck="false" placeholder="At least 16 characters" aria-describedby="demo-key-hint">
+                <div class="actions">
+                  <button class="icon-btn" type="button" data-demo-eye aria-pressed="false" aria-label="Show key" title="Show key">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div class="key-meter">
+                <span class="badge badge--ok" data-demo-algo>AES-256-CBC</span>
+                <span id="demo-key-hint" data-demo-hint></span>
+              </div>
+              <div><button class="btn btn--quiet btn--sm" type="button" data-demo-sample>Use sample key</button></div>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="demo-input"><span data-demo-input-label>Text to encrypt</span></label>
+              <textarea class="textarea mono" id="demo-input" spellcheck="false" autocomplete="off" placeholder="e.g. myDatabasePassword"></textarea>
+            </div>
+          </div>
+
+          <div class="demo-pane">
+            <div class="field">
+              <span class="field-label" id="demo-output-label" data-demo-output-label>Encrypted value</span>
+              <div class="output" data-demo-output aria-labelledby="demo-output-label">
+                <span class="output-text" data-demo-output-text aria-live="polite"></span>
+                <div class="output-actions">
+                  <button class="copy-btn" type="button" data-demo-swap disabled title="Move the result into the input and flip the operation">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5.5h9.5L10 3M13 10.5H3.5L6 13"/></svg>
+                    <span class="label">Round trip</span>
+                  </button>
+                  <button class="copy-btn" type="button" data-demo-copy disabled>
+                    <svg class="i-copy" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="1.8"/><path d="M11 5V3.8A1.3 1.3 0 0 0 9.7 2.5H3.8A1.3 1.3 0 0 0 2.5 3.8v5.9A1.3 1.3 0 0 0 3.8 11H5"/></svg>
+                    <svg class="i-check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7"/></svg>
+                    <span class="label">Copy</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <ol class="how">
+              <li><strong>Key.</strong> Exactly 32 characters selects AES-256. Any other key of 16 or more uses its first 16 bytes for AES-128.</li>
+              <li><strong>IV.</strong> Taken from the first 16 characters of the key, so the same input always gives the same token.</li>
+              <li><strong>Cipher.</strong> CBC mode with PKCS5 padding, matching MuleSoft’s standard configuration.</li>
+              <li><strong>Output.</strong> Base64-encoded and wrapped as <code>![…]</code>, ready to paste.</li>
+            </ol>
+
+            <div class="demo-note">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M10 2.8 18 17H2z"/><path d="M10 8v4M10 14.4v.1" stroke-linecap="round"/></svg>
+              <p><strong>For trying things out only.</strong> Don’t paste production keys or secrets into any website, this one included. The extension keeps real keys in your OS keychain.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- Secure Properties explorer                                        -->
+    <!-- ================================================================ -->
+    <section class="section section--alt" id="algorithms" aria-labelledby="algorithms-title">
+      <div class="wrap wrap-wide">
+        <div class="section-head" data-reveal>
+          <span class="eyebrow" style="color:var(--c-sp)">Secure Properties</span>
+          <h2 class="headline" id="algorithms-title">Every algorithm the generator speaks.</h2>
+          <p class="intro">When a project needs more than AES/CBC, the Secure Properties tool offers <strong>the full MuleSoft generator matrix</strong>, and quietly switches off combinations that don’t make sense. Explore it below.</p>
+        </div>
+
+        <div class="explorer" data-explorer>
+          <div class="explorer-controls" data-reveal>
+            <div class="ctl-group" role="group" aria-labelledby="ctl-algo">
+              <div class="ctl-label" id="ctl-algo">Algorithm</div>
+              <div class="pills">
+                <button class="pill" type="button" data-algo="AES" aria-pressed="true">AES</button>
+                <button class="pill" type="button" data-algo="Blowfish" aria-pressed="false">Blowfish</button>
+                <button class="pill" type="button" data-algo="DES" aria-pressed="false">DES</button>
+                <button class="pill" type="button" data-algo="DESede" aria-pressed="false">DESede</button>
+                <button class="pill" type="button" data-algo="RC2" aria-pressed="false">RC2</button>
+                <button class="pill" type="button" data-algo="RCA" aria-pressed="false">RCA</button>
+              </div>
+            </div>
+            <div class="ctl-group" role="group" aria-labelledby="ctl-mode">
+              <div class="ctl-label"><span id="ctl-mode">State (mode)</span><em data-mode-note></em></div>
+              <div class="pills">
+                <button class="pill" type="button" data-mode="CBC" aria-pressed="true">CBC</button>
+                <button class="pill" type="button" data-mode="CFB" aria-pressed="false">CFB</button>
+                <button class="pill" type="button" data-mode="ECB" aria-pressed="false">ECB</button>
+                <button class="pill" type="button" data-mode="OFB" aria-pressed="false">OFB</button>
+              </div>
+            </div>
+            <div class="ctl-group">
+              <div class="ctl-label">Initialization vector</div>
+              <div class="switch-row" data-iv-row>
+                <label for="iv-switch">Use Random IVs<small data-iv-note>Prepends a fresh IV to every value</small></label>
+                <input class="switch" id="iv-switch" type="checkbox" role="switch">
+              </div>
+            </div>
+            <p class="explorer-foot">Blowfish, DES, RC2 and RC4 rely on OpenSSL’s legacy provider. If your VS Code runtime doesn’t include it, you get a clear error rather than a silent failure.</p>
+          </div>
+
+          <div class="explorer-readout" data-reveal style="--d:1">
+            <div data-readout aria-live="polite">
+              <div class="readout-head">
+                <div>
+                  <div class="readout-name" data-r="name">AES</div>
+                  <div class="readout-full" data-r="full">Advanced Encryption Standard</div>
+                </div>
+                <span class="badge badge--accent" data-r="tag">Default</span>
+              </div>
+              <div class="readout-token" data-r="token">![<span class="dim">base64(</span>ciphertext<span class="dim">)</span>]</div>
+              <dl class="readout-rows">
+                <div><dt>Cipher</dt><dd data-r="cipher"><code>aes-{128|192|256}-cbc</code></dd></div>
+                <div><dt>IV</dt><dd data-r="iv">16 bytes, taken from the first 16 key characters</dd></div>
+                <div><dt>Key</dt><dd data-r="key">16, 24 or 32 characters → AES-128, AES-192 or AES-256</dd></div>
+                <div><dt>Output</dt><dd data-r="output">Identical for identical input</dd></div>
+                <div><dt>Runtime</dt><dd data-r="runtime" class="ok">Always available</dd></div>
+              </dl>
+              <p class="readout-hint" data-r="hint">These are the defaults, and they’re byte-for-byte identical to the MuleSoft AES tool.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- Key management                                                    -->
+    <!-- ================================================================ -->
+    <section class="section" id="keys" aria-labelledby="keys-title">
+      <div class="wrap wrap-wide">
+        <div class="tile-split" style="align-items:center">
+          <div data-reveal>
+            <span class="eyebrow" style="color:var(--c-keys)">KeyIdentifiers</span>
+            <h2 class="headline-sm" id="keys-title">Your keys.<br> In your keychain.</h2>
+            <p class="body-lg" style="margin-top:18px">Name a key once (DEV, FIT, UAT, PROD, or anything you like) and pick it from a dropdown forever after. Keys live in VS Code’s SecretStorage, backed by your operating system’s credential vault.</p>
+            <ul class="feature-list">
+              <li><strong>Presets for every environment.</strong> DEV, FIT, UAT and PROD are ready to fill in.</li>
+              <li><strong>Your order, your way.</strong> Drag rows, or use Move up and Move down from the keyboard.</li>
+              <li><strong>Save from anywhere.</strong> Typed a new key on the encrypt screen? Save it as a KeyIdentifier in one click.</li>
+              <li><strong>Masked by default.</strong> Keys show as <code>DEV-7****…5Yj</code> until you choose to reveal them.</li>
+              <li><strong>Always in sync.</strong> Changes refresh every open panel automatically.</li>
+            </ul>
+            <div class="vault-row" aria-label="Where keys are stored">
+              <span class="chip"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg>macOS Keychain</span>
+              <span class="chip"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg>Windows Credential Manager</span>
+              <span class="chip"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg>Linux Secret Service</span>
+            </div>
+          </div>
+
+          <div data-reveal style="--d:1">
+            <div class="keys-shot">
+              <header><img src="assets/img/settings.svg" alt="">MuleSoft AES Settings</header>
+              <ul class="key-table" data-keys aria-label="Sample KeyIdentifiers. Use Move up and Move down, or drag the handle, to reorder.">
+                <li class="key-row" data-name="DEV">
+                  <span class="reorder">
+                    <span class="grip" data-grip title="Drag to reorder" aria-hidden="true"><svg viewBox="0 0 16 16" fill="currentColor"><circle cx="6" cy="4" r="1.1"/><circle cx="10" cy="4" r="1.1"/><circle cx="6" cy="8" r="1.1"/><circle cx="10" cy="8" r="1.1"/><circle cx="6" cy="12" r="1.1"/><circle cx="10" cy="12" r="1.1"/></svg></span>
+                    <button type="button" data-up aria-label="Move DEV up">▲</button>
+                    <button type="button" data-down aria-label="Move DEV down">▼</button>
+                  </span>
+                  <span class="kid">DEV</span>
+                  <span class="kval" data-key="DEV-7fQ2xK9mLp4Rv8Ns3Wb6Tz1Hc5Yj"></span>
+                  <button class="eye" type="button" data-eye aria-pressed="false" aria-label="Show DEV key"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                </li>
+                <li class="key-row" data-name="FIT">
+                  <span class="reorder">
+                    <span class="grip" data-grip title="Drag to reorder" aria-hidden="true"><svg viewBox="0 0 16 16" fill="currentColor"><circle cx="6" cy="4" r="1.1"/><circle cx="10" cy="4" r="1.1"/><circle cx="6" cy="8" r="1.1"/><circle cx="10" cy="8" r="1.1"/><circle cx="6" cy="12" r="1.1"/><circle cx="10" cy="12" r="1.1"/></svg></span>
+                    <button type="button" data-up aria-label="Move FIT up">▲</button>
+                    <button type="button" data-down aria-label="Move FIT down">▼</button>
+                  </span>
+                  <span class="kid">FIT</span>
+                  <span class="kval" data-key="FIT-LxHQBQrfsBa2datkZ2nzWMYV4JBk"></span>
+                  <button class="eye" type="button" data-eye aria-pressed="false" aria-label="Show FIT key"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                </li>
+                <li class="key-row" data-name="UAT">
+                  <span class="reorder">
+                    <span class="grip" data-grip title="Drag to reorder" aria-hidden="true"><svg viewBox="0 0 16 16" fill="currentColor"><circle cx="6" cy="4" r="1.1"/><circle cx="10" cy="4" r="1.1"/><circle cx="6" cy="8" r="1.1"/><circle cx="10" cy="8" r="1.1"/><circle cx="6" cy="12" r="1.1"/><circle cx="10" cy="12" r="1.1"/></svg></span>
+                    <button type="button" data-up aria-label="Move UAT up">▲</button>
+                    <button type="button" data-down aria-label="Move UAT down">▼</button>
+                  </span>
+                  <span class="kid">UAT</span>
+                  <span class="kval" data-key="UAT-hymzgTN3oJRgKUNjiKxbqfiFMzFC"></span>
+                  <button class="eye" type="button" data-eye aria-pressed="false" aria-label="Show UAT key"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                </li>
+                <li class="key-row" data-name="PROD">
+                  <span class="reorder">
+                    <span class="grip" data-grip title="Drag to reorder" aria-hidden="true"><svg viewBox="0 0 16 16" fill="currentColor"><circle cx="6" cy="4" r="1.1"/><circle cx="10" cy="4" r="1.1"/><circle cx="6" cy="8" r="1.1"/><circle cx="10" cy="8" r="1.1"/><circle cx="6" cy="12" r="1.1"/><circle cx="10" cy="12" r="1.1"/></svg></span>
+                    <button type="button" data-up aria-label="Move PROD up">▲</button>
+                    <button type="button" data-down aria-label="Move PROD down">▼</button>
+                  </span>
+                  <span class="kid">PROD</span>
+                  <span class="kval" data-key="PROD-CErLqSnJpMnhjydvqNEJQPpDW74"></span>
+                  <button class="eye" type="button" data-eye aria-pressed="false" aria-label="Show PROD key"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                </li>
+                <li class="key-row" data-name="SANDBOX">
+                  <span class="reorder">
+                    <span class="grip" data-grip title="Drag to reorder" aria-hidden="true"><svg viewBox="0 0 16 16" fill="currentColor"><circle cx="6" cy="4" r="1.1"/><circle cx="10" cy="4" r="1.1"/><circle cx="6" cy="8" r="1.1"/><circle cx="10" cy="8" r="1.1"/><circle cx="6" cy="12" r="1.1"/><circle cx="10" cy="12" r="1.1"/></svg></span>
+                    <button type="button" data-up aria-label="Move SANDBOX up">▲</button>
+                    <button type="button" data-down aria-label="Move SANDBOX down">▼</button>
+                  </span>
+                  <span class="kid">SANDBOX</span>
+                  <span class="kval" data-key="SBX-TECBnzUXpJYZfTJz7jM4FyYZvv8x"></span>
+                  <button class="eye" type="button" data-eye aria-pressed="false" aria-label="Show SANDBOX key"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                </li>
+              </ul>
+              <div class="keys-foot" aria-hidden="true"><span>✓ Save Changes</span><span>+ Add KeyIdentifier</span></div>
+            </div>
+            <p class="fineprint center" style="margin-top:14px">Sample keys for illustration. Drag a handle, or use the arrows.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- Privacy                                                           -->
+    <!-- ================================================================ -->
+    <section class="section section--dark" id="privacy" aria-labelledby="privacy-title">
+      <div class="wrap wrap-wide">
+        <img class="shield-mark" src="assets/img/aes.svg" alt="" width="88" height="88">
+        <h2 class="sr-only" id="privacy-title">Privacy and security</h2>
+        <p class="lit" data-lit>Your secrets <span class="hl">never leave your machine.</span> No servers. No accounts. No telemetry. Just OpenSSL, your OS keychain, and your editor.</p>
+
+        <div class="privacy-grid">
+          <article class="privacy-card" data-reveal>
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="7" width="18" height="18" rx="3"/><rect x="12" y="12" width="8" height="8" rx="1"/><path d="M12 3v4M20 3v4M12 25v4M20 25v4M3 12h4M3 20h4M25 12h4M25 20h4" stroke-linecap="round"/></svg>
+            <h3>Local cryptography</h3>
+            <p>Every operation runs in-process through Node.js and OpenSSL, provided by VS Code itself.</p>
+          </article>
+          <article class="privacy-card" data-reveal style="--d:1">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="16" r="5.5"/><path d="M16.5 16H28M24 16v4.5M28 16v3.5"/></svg>
+            <h3>Keys in your keychain</h3>
+            <p>Stored in VS Code’s SecretStorage. Never in <code style="background:rgba(255,255,255,.08)">settings.json</code>, never in your workspace.</p>
+          </article>
+          <article class="privacy-card" data-reveal style="--d:2">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5a17 17 0 0 1 24 0M8 17a11 11 0 0 1 16 0M12 21.5a5 5 0 0 1 8 0"/><circle cx="16" cy="25.5" r="1" fill="currentColor"/><path d="M4 4l24 24"/></svg>
+            <h3>Zero network calls</h3>
+            <p>No external APIs, no analytics, no telemetry. It works the same on a plane as it does at your desk.</p>
+          </article>
+          <article class="privacy-card" data-reveal style="--d:3">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m11 10-6 6 6 6M21 10l6 6-6 6M18 7l-4 18"/></svg>
+            <h3>Open source</h3>
+            <p>MIT licensed. Every line that touches your secrets is on GitHub for you to read.</p>
+          </article>
+        </div>
+
+        <div class="practices" data-reveal>
+          <div>
+            <h3>Good habits, a click away.</h3>
+            <p>Best practices from the documentation. The extension makes each one easy to follow.</p>
+          </div>
+          <ol>
+            <li><span><strong>Use 32-character keys.</strong> They unlock AES-256.</span></li>
+            <li><span><strong>Prefer random IVs</strong> for new secrets where your MuleSoft runtime supports them.</span></li>
+            <li><span><strong>Keep one key per environment:</strong> DEV, FIT, UAT and PROD.</span></li>
+            <li><span><strong>Rotate production keys</strong> periodically.</span></li>
+            <li><span><strong>Leave DES, RC2 and RC4 for legacy values.</strong> Don’t use them for new data.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- Tech specs                                                        -->
+    <!-- ================================================================ -->
+    <section class="section" id="specs" aria-labelledby="specs-title">
+      <div class="wrap">
+        <div class="section-head" data-reveal>
+          <h2 class="headline" id="specs-title">Tech specs</h2>
+        </div>
+        <div class="specs" data-reveal>
+          <div class="spec"><h3>Tools</h3><div class="spec-body"><ul><li>MuleSoft AES Encrypt / Decrypt</li><li>MuleSoft Secure Properties Encrypt / Decrypt</li><li>Base64 Encode / Decode</li></ul></div></div>
+          <div class="spec"><h3>Algorithms</h3><div class="spec-body"><p>AES-128, AES-192<sup>1</sup>, AES-256, Blowfish, DES, DESede (3DES), RC2, RC4 (RCA)</p></div></div>
+          <div class="spec"><h3>Cipher modes</h3><div class="spec-body"><p>CBC (default), CFB, ECB, OFB</p></div></div>
+          <div class="spec"><h3>Padding</h3><div class="spec-body"><p>PKCS5</p></div></div>
+          <div class="spec"><h3>Initialization vectors</h3><div class="spec-body"><p>Derived from the key (default, deterministic)</p><p>Random per value, prepended to the ciphertext<sup>1</sup></p></div></div>
+          <div class="spec"><h3>Output format</h3><div class="spec-body"><p><code>![base64]</code>, MuleSoft’s secure configuration properties format</p><p class="muted">Decrypt accepts wrapped, quoted or raw Base64 input.</p></div></div>
+          <div class="spec"><h3>Editor integration</h3><div class="spec-body"><p>Editor toolbar buttons, right-click selection actions and a whole-file workflow</p><p class="muted">For <code>.yaml</code>, <code>.yml</code> and <code>.properties</code> files.</p></div></div>
+          <div class="spec"><h3>Key storage</h3><div class="spec-body"><p>VS Code SecretStorage, backed by macOS Keychain, Windows Credential Manager, or Secret Service / <code>pass</code> on Linux</p></div></div>
+          <div class="spec"><h3>Requirements</h3><div class="spec-body"><p>Visual Studio Code 1.105.0 or later</p><p class="muted">Also available for VSCodium, Gitpod, Eclipse Theia and other builds through Open VSX.</p></div></div>
+          <div class="spec"><h3>Size</h3><div class="spec-body"><p>About 200 KB download</p></div></div>
+          <div class="spec"><h3>Price and license</h3><div class="spec-body"><p>Free. Open source under the MIT License.</p></div></div>
+        </div>
+        <p class="fineprint" style="margin-top:20px"><sup>1</sup> Available in the Secure Properties tool. The AES tool uses AES-128 or AES-256 with a derived IV.</p>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- Install                                                           -->
+    <!-- ================================================================ -->
+    <section class="section section--alt" id="install" aria-labelledby="install-title">
+      <div class="wrap wrap-wide">
+        <div class="section-head center" data-reveal>
+          <span class="eyebrow">Install</span>
+          <h2 class="headline" id="install-title">Up and running in a minute.</h2>
+          <p class="intro">Pick whichever way suits your editor. <strong>It’s free, and it always will be.</strong></p>
+        </div>
+
+        <div class="install-grid">
+          <article class="install-card" data-reveal>
+            <div class="ic-head">
+              <svg viewBox="0 0 36 36" fill="none" aria-hidden="true"><rect width="36" height="36" rx="9" fill="#0071e3"/><path d="M11 14h14l-1.2 11.2a1.5 1.5 0 0 1-1.5 1.3h-8.6a1.5 1.5 0 0 1-1.5-1.3z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M14.5 14v-1.5a3.5 3.5 0 0 1 7 0V14" stroke="#fff" stroke-width="1.8"/></svg>
+              <h3>VS Code Marketplace</h3>
+            </div>
+            <p>In VS Code, open Extensions (<kbd>⇧⌘X</kbd> or <kbd>Ctrl+Shift+X</kbd>), search for <strong>MuleSoft AES</strong>, and select Install.</p>
+            <div class="actions">
+              <a class="btn" href="https://marketplace.visualstudio.com/items?itemName=framedparadox.mule-aes" rel="noopener">View on Marketplace</a>
+              <a class="link-arrow" href="vscode:extension/framedparadox.mule-aes">Open in VS Code</a>
+            </div>
+          </article>
+
+          <article class="install-card" data-reveal style="--d:1">
+            <div class="ic-head">
+              <svg viewBox="0 0 36 36" fill="none" aria-hidden="true"><rect width="36" height="36" rx="9" fill="#1d1d1f"/><path d="m11 13 5 5-5 5M18.5 23H25" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <h3>Command line</h3>
+            </div>
+            <p>Uses the <code>code</code> command that ships with VS Code.</p>
+            <div class="actions" style="display:block">
+              <div class="cmd">
+                <span class="prompt" aria-hidden="true">$</span>
+                <code>code --install-extension framedparadox.mule-aes</code>
+                <button class="copy-btn" type="button" data-copy="code --install-extension framedparadox.mule-aes" aria-label="Copy install command">
+                  <svg class="i-copy" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="1.8"/><path d="M11 5V3.8A1.3 1.3 0 0 0 9.7 2.5H3.8A1.3 1.3 0 0 0 2.5 3.8v5.9A1.3 1.3 0 0 0 3.8 11H5"/></svg>
+                  <svg class="i-check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7"/></svg>
+                  <span class="label">Copy</span>
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <article class="install-card" data-reveal>
+            <div class="ic-head">
+              <svg viewBox="0 0 36 36" fill="none" aria-hidden="true"><rect width="36" height="36" rx="9" fill="#a60ee5"/><path d="M18 9.5 26 14v8l-8 4.5-8-4.5v-8z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="m10 14 8 4.5 8-4.5M18 18.5v8" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              <h3>Open VSX</h3>
+            </div>
+            <p>For VSCodium, Gitpod, Eclipse Theia and other editors built on the open-source VS Code.</p>
+            <div class="actions">
+              <a class="btn btn--ghost" href="https://open-vsx.org/extension/framedparadox/mule-aes" rel="noopener">View on Open VSX</a>
+            </div>
+          </article>
+
+          <article class="install-card" data-reveal style="--d:1">
+            <div class="ic-head">
+              <svg viewBox="0 0 36 36" fill="none" aria-hidden="true"><rect width="36" height="36" rx="9" fill="#2da44e"/><path d="M18 10v12M13 17.5l5 5 5-5M11.5 26h13" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <h3>Download a VSIX</h3>
+            </div>
+            <p>Grab the <code>.vsix</code> from GitHub Releases, then choose <strong>Extensions › ⋯ › Install from VSIX…</strong></p>
+            <div class="actions">
+              <a class="btn btn--ghost" href="https://github.com/framedparadox/mulesoft-aes-vscode/releases" rel="noopener">GitHub Releases</a>
+            </div>
+          </article>
+        </div>
+
+        <ol class="steps">
+          <li data-reveal><h3>Open the sidebar</h3><p>Click the MuleSoft AES icon in the activity bar.</p></li>
+          <li data-reveal style="--d:1"><h3>Add your keys</h3><p>Open Settings and fill in DEV, FIT, UAT and PROD, or name your own.</p></li>
+          <li data-reveal style="--d:2"><h3>Open a config file</h3><p>Any <code>.yaml</code>, <code>.yml</code> or <code>.properties</code> file.</p></li>
+          <li data-reveal style="--d:3"><h3>Seal a value</h3><p>Select it, right-click, and choose Encrypt Selection.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- FAQ                                                               -->
+    <!-- ================================================================ -->
+    <section class="section" id="faq" aria-labelledby="faq-title">
+      <div class="wrap wrap-narrow">
+        <div class="section-head" data-reveal>
+          <h2 class="headline" id="faq-title">Questions? Answers.</h2>
+        </div>
+        <div class="faq" data-reveal>
+          <details>
+            <summary>Is the output compatible with MuleSoft’s Secure Properties tool?</summary>
+            <div class="answer">
+              <p>Yes. Every value uses MuleSoft’s <code>![base64]</code> secure‑properties format. The AES tool matches MuleSoft’s standard AES/CBC setup with an IV derived from the key, and the Secure Properties tool mirrors the generator’s algorithms, modes and random‑IV option.</p>
+            </div>
+          </details>
+          <details>
+            <summary>Does the extension send my keys or data anywhere?</summary>
+            <div class="answer">
+              <p><strong>No.</strong> All encryption and decryption happens locally. There are no network requests, no external APIs and no telemetry. Keys are held only in VS Code’s secret storage, which maps to your operating system’s keychain.</p>
+            </div>
+          </details>
+          <details>
+            <summary>Why do I get a different result every time I encrypt?</summary>
+            <div class="answer">
+              <p>That’s expected when <strong>Use Random IVs</strong> is on in the Secure Properties tool. A fresh IV is generated for each value and stored at the front of the token, so every result differs but they all decrypt to the same text. Turn it off for deterministic output.</p>
+            </div>
+          </details>
+          <details>
+            <summary>Blowfish, DES, RC2 or RCA says “not supported by this runtime.” Why?</summary>
+            <div class="answer">
+              <p>Those legacy ciphers depend on OpenSSL’s “legacy” provider, which may not be enabled in your VS Code runtime. The extension reports a clear error instead of failing silently. AES and DESede always work, and AES is the right choice for new secrets.</p>
+            </div>
+          </details>
+          <details>
+            <summary>Can I use AES-192?</summary>
+            <div class="answer">
+              <p>Yes, in the <strong>Secure Properties</strong> tool: a 24‑character key selects AES‑192. The standalone AES tool only produces AES‑128 or AES‑256, so a 24‑character key there resolves to AES‑128 using its first 16 bytes.</p>
+            </div>
+          </details>
+          <details>
+            <summary>Decryption fails or returns garbage. What should I check?</summary>
+            <div class="answer">
+              <p>Every setting has to match the one used to encrypt: the key or KeyIdentifier and, in the Secure Properties tool, the algorithm, mode and <strong>Use Random IVs</strong> option.</p>
+            </div>
+          </details>
+          <details>
+            <summary>The editor buttons don’t appear.</summary>
+            <div class="answer">
+              <p>They only show for <code>.yaml</code>, <code>.yml</code> and <code>.properties</code> files. The Secure Properties tool deliberately has no editor button. Open it from the sidebar or the Command Palette instead.</p>
+            </div>
+          </details>
+          <details>
+            <summary>Is this an official MuleSoft product?</summary>
+            <div class="answer">
+              <p>No. It’s an independent, open‑source project and isn’t affiliated with, sponsored by or endorsed by MuleSoft or Salesforce.</p>
+            </div>
+          </details>
+        </div>
+        <p class="muted" style="margin-top:32px">More answers in the <a href="docs.html#troubleshooting">troubleshooting guide</a>, or <a href="https://github.com/framedparadox/mulesoft-aes-vscode/issues" rel="noopener">open an issue on GitHub</a>.</p>
+      </div>
+    </section>
+
+    <!-- ================================================================ -->
+    <!-- Final CTA                                                         -->
+    <!-- ================================================================ -->
+    <section class="section section--alt final-cta" aria-labelledby="cta-title">
+      <div class="wrap">
+        <img src="assets/img/icon.png" alt="" width="112" height="112" data-reveal>
+        <h2 class="headline" id="cta-title" data-reveal style="--d:1">Seal your first secret in under a minute.</h2>
+        <p class="intro" data-reveal style="--d:2">Free, open source, and <strong>entirely on your machine.</strong></p>
+        <div class="cta-row" data-reveal style="--d:3">
+          <a class="btn btn--lg" href="https://marketplace.visualstudio.com/items?itemName=framedparadox.mule-aes" rel="noopener">Install for VS Code</a>
+          <a class="link-arrow" href="docs.html">Read the documentation</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================================================================ -->
+  <!-- Footer                                                            -->
+  <!-- ================================================================ -->
+  <footer class="footer">
+    <div class="wrap wrap-wide">
+      <div class="footer-note">
+        <p>The live demo on this page runs entirely in your browser using the Web Crypto API. Nothing you type is transmitted or stored. This site sets no cookies and loads no third‑party scripts, fonts or trackers.</p>
+        <p>MuleSoft is a trademark of Salesforce, Inc. Visual Studio Code is a trademark of Microsoft Corporation. MuleSoft AES &amp; Secure Properties is an independent open‑source project and is not affiliated with, sponsored by, or endorsed by Salesforce, MuleSoft or Microsoft.</p>
+      </div>
+      <nav class="footer-cols" aria-label="Footer">
+        <div>
+          <h3>Product</h3>
+          <ul>
+            <li><a href="#workflow">Features</a></li>
+            <li><a href="#tools">Tools</a></li>
+            <li><a href="#try">Live demo</a></li>
+            <li><a href="#specs">Tech specs</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Documentation</h3>
+          <ul>
+            <li><a href="docs.html#quick-start">Quick start</a></li>
+            <li><a href="docs.html#secure-properties">Secure Properties</a></li>
+            <li><a href="docs.html#commands">Commands</a></li>
+            <li><a href="docs.html#troubleshooting">Troubleshooting</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Get it</h3>
+          <ul>
+            <li><a href="https://marketplace.visualstudio.com/items?itemName=framedparadox.mule-aes" rel="noopener">VS Code Marketplace</a></li>
+            <li><a href="https://open-vsx.org/extension/framedparadox/mule-aes" rel="noopener">Open VSX</a></li>
+            <li><a href="https://github.com/framedparadox/mulesoft-aes-vscode/releases" rel="noopener">GitHub Releases</a></li>
+            <li><a href="#install">Install from the CLI</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Project</h3>
+          <ul>
+            <li><a href="https://github.com/framedparadox/mulesoft-aes-vscode" rel="noopener">Source on GitHub</a></li>
+            <li><a href="changelog.html">Changelog</a></li>
+            <li><a href="https://github.com/framedparadox/mulesoft-aes-vscode/issues" rel="noopener">Report an issue</a></li>
+            <li><a href="https://github.com/framedparadox/mulesoft-aes-vscode/blob/main/LICENSE" rel="noopener">MIT License</a></li>
+          </ul>
+        </div>
+      </nav>
+      <div class="footer-bottom">
+        <p>Copyright © <span data-year>2026</span> framedparadox. Released under the MIT License.</p>
+        <div class="legal"><a href="privacy.html">Privacy</a><a href="https://github.com/framedparadox/mulesoft-aes-vscode/blob/main/LICENSE" rel="noopener">License</a><a href="changelog.html">Changelog</a></div>
+        <div class="seg seg--sm theme-seg" data-theme-seg role="group" aria-label="Appearance">
+          <button type="button" data-value="auto" aria-pressed="true">Auto</button>
+          <button type="button" data-value="light" aria-pressed="false">Light</button>
+          <button type="button" data-value="dark" aria-pressed="false">Dark</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

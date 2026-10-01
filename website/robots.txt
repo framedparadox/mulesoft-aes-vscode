@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://framedparadox.github.io/mulesoft-aes-vscode/sitemap.xml

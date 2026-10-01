@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Privacy · MuleSoft AES for VS Code</title>
+  <meta name="description" content="Privacy policy for the MuleSoft AES & Secure Properties VS Code extension and this website. No data collection, no telemetry, no cookies.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <link rel="canonical" href="https://framedparadox.github.io/mulesoft-aes-vscode/privacy.html">
+  <link rel="icon" href="assets/img/aes.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/img/icon.png" type="image/png" sizes="128x128">
+  <link rel="apple-touch-icon" href="assets/img/icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.replace('no-js', 'js');
+      try {
+        var t = localStorage.getItem('mule-aes-theme');
+        if (t === 'light' || t === 'dark') d.dataset.theme = t;
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="assets/css/site.css">
+  <script src="assets/js/site.js" defer></script>
+</head>
+<body class="legal-page">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="nav" data-open="false">
+    <nav class="nav-inner" aria-label="Primary">
+      <a class="brand" href="./" aria-label="MuleSoft AES home">
+        <img src="assets/img/icon.png" alt="" width="26" height="26">
+        <span>MuleSoft AES</span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="./#workflow">Features</a></li>
+        <li><a href="./#try">Try it</a></li>
+        <li><a href="./#algorithms">Algorithms</a></li>
+        <li><a href="./#privacy">Privacy</a></li>
+        <li><a href="docs.html">Docs</a></li>
+        <li><a href="changelog.html">Changelog</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-label="Switch appearance">
+          <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1Z"/></svg>
+          <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+        </button>
+        <a class="btn btn--sm" href="./#install">Install</a>
+        <button class="icon-btn menu-toggle" type="button" aria-controls="nav-links" aria-expanded="false" aria-label="Menu">
+          <span class="bars" aria-hidden="true"><span class="bar"></span><span class="bar"></span></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <header class="page-hero">
+      <div class="wrap wrap-narrow">
+        <span class="eyebrow">Privacy</span>
+        <h1 class="headline">Nothing to collect. Nothing&nbsp;collected.</h1>
+        <p class="intro">This policy covers the MuleSoft AES &amp; Secure Properties extension for VS Code and this website. <strong>Effective September 28, 2026.</strong></p>
+      </div>
+    </header>
+
+    <div class="wrap wrap-narrow docs">
+      <article class="prose">
+        <section>
+          <div class="summary-box">
+            <h2 style="font-size:21px">In short</h2>
+            <ul>
+              <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="10" r="8"/><path d="m6.5 10.2 2.3 2.3 4.7-4.9"/></svg><span>The extension makes no network requests and collects no telemetry.</span></li>
+              <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="10" r="8"/><path d="m6.5 10.2 2.3 2.3 4.7-4.9"/></svg><span>Your keys stay in your operating system’s credential store, on your machine.</span></li>
+              <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="10" r="8"/><path d="m6.5 10.2 2.3 2.3 4.7-4.9"/></svg><span>This website sets no cookies, runs no analytics, and loads nothing from third parties.</span></li>
+            </ul>
+          </div>
+        </section>
+
+        <section>
+          <h2>The extension</h2>
+          <h3>What it stores</h3>
+          <p>KeyIdentifier names and their encryption keys are saved in VS Code’s <strong>SecretStorage</strong>, which is backed by your operating system’s credential vault: macOS Keychain, Windows Credential Manager, or Secret Service / <code>pass</code> on Linux. They are never written to <code>settings.json</code>, to your workspace, or to any file the extension creates.</p>
+          <p>Keys you type with <strong>Input key manually</strong> or as a one-off custom key are used for that operation only and are not stored unless you choose to save them.</p>
+          <h3>What it sends</h3>
+          <p>Nothing. All encryption, decryption and Base64 conversion runs locally, in-process, using the Node.js and OpenSSL runtime that ships with VS Code. The extension makes no network requests, calls no external APIs, and includes no analytics or telemetry of its own.</p>
+          <h3>What it changes</h3>
+          <p>It edits files only when you ask it to: replacing a selection, or applying the fields you tick in the whole-file workflow, as a normal, undoable VS Code edit.</p>
+          <h3>Marketplaces</h3>
+          <p>When you install or update the extension, you interact with the VS Code Marketplace, Open VSX or GitHub, each under its own privacy terms. VS Code’s own telemetry settings are controlled by VS Code, not by this extension.</p>
+        </section>
+
+        <section>
+          <h2>This website</h2>
+          <ul>
+            <li><strong>No cookies, no analytics, no trackers.</strong> The site loads no third-party scripts, fonts, images or embeds.</li>
+            <li><strong>Local preference only.</strong> If you choose Light or Dark appearance, that choice is saved in your browser’s local storage so it’s remembered next time. It never leaves your device, and you can clear it by choosing Auto or clearing site data.</li>
+            <li><strong>The live demo stays in your browser.</strong> It uses the Web Crypto API on your device. Keys and text you type are not transmitted or stored.</li>
+            <li><strong>Hosting.</strong> Like any website, the host that serves these pages may keep standard server logs (such as IP address and user agent) under its own policies.</li>
+          </ul>
+          <div class="callout callout--warn">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M10 2.8 18 17H2z"/><path d="M10 8v4M10 14.4v.1" stroke-linecap="round"/></svg>
+            <p>Even though the demo runs locally, please don’t paste production keys or secrets into any website. Use the extension for real work.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Changes and contact</h2>
+          <p>If this policy changes, the updated version will be published on this page with a new effective date, and noted in the <a href="changelog.html">changelog</a> where it affects the extension.</p>
+          <p>Questions? <a href="https://github.com/framedparadox/mulesoft-aes-vscode/issues" rel="noopener">Open an issue on GitHub</a>. The source code for both the extension and this website is public, so you can verify everything above.</p>
+        </section>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap wrap-wide">
+      <div class="footer-note">
+        <p>MuleSoft is a trademark of Salesforce, Inc. Visual Studio Code is a trademark of Microsoft Corporation. MuleSoft AES &amp; Secure Properties is an independent open‑source project and is not affiliated with, sponsored by, or endorsed by Salesforce, MuleSoft or Microsoft.</p>
+      </div>
+      <div class="footer-bottom">
+        <p>Copyright © <span data-year>2026</span> framedparadox. Released under the MIT License.</p>
+        <div class="legal"><a href="docs.html">Documentation</a><a href="https://github.com/framedparadox/mulesoft-aes-vscode/blob/main/LICENSE" rel="noopener">License</a><a href="changelog.html">Changelog</a></div>
+        <div class="seg seg--sm theme-seg" data-theme-seg role="group" aria-label="Appearance">
+          <button type="button" data-value="auto" aria-pressed="true">Auto</button>
+          <button type="button" data-value="light" aria-pressed="false">Light</button>
+          <button type="button" data-value="dark" aria-pressed="false">Dark</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

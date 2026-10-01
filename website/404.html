@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Page not found · MuleSoft AES for VS Code</title>
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <!-- Absolute-from-root paths are avoided so this page works from any sub-path; the base
+       keeps assets resolving when a host serves it for a nested missing URL. -->
+  <base href="/mulesoft-aes-vscode/">
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.replace('no-js', 'js');
+      // When served from a different root (local preview, custom domain), drop the base.
+      if (location.pathname.indexOf('/mulesoft-aes-vscode/') !== 0) {
+        var b = document.querySelector('base');
+        if (b) b.setAttribute('href', '/');
+      }
+      try {
+        var t = localStorage.getItem('mule-aes-theme');
+        if (t === 'light' || t === 'dark') d.dataset.theme = t;
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="icon" href="assets/img/aes.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <script src="assets/js/site.js" defer></script>
+</head>
+<body>
+  <header class="nav" data-open="false">
+    <nav class="nav-inner" aria-label="Primary">
+      <a class="brand" href="./" aria-label="MuleSoft AES home">
+        <img src="assets/img/icon.png" alt="" width="26" height="26">
+        <span>MuleSoft AES</span>
+      </a>
+      <div class="nav-actions">
+        <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-label="Switch appearance">
+          <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1Z"/></svg>
+          <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+        </button>
+        <a class="btn btn--sm" href="./#install">Install</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="notfound">
+    <div class="wrap">
+      <span class="cipher" aria-hidden="true">![Tm90IEZvdW5k]</span>
+      <h1 class="headline">This page is encrypted.</h1>
+      <p class="intro" style="margin-top:18px">Well, not really. <strong>It just doesn’t exist.</strong></p>
+      <div class="cta-row" style="margin-top:32px">
+        <a class="btn" href="./">Back to the overview</a>
+        <a class="link-arrow" href="docs.html">Read the documentation</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
