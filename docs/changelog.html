@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Changelog · MuleSoft AES for VS Code</title>
+  <meta name="description" content="Release notes for MuleSoft AES & Secure Properties for VS Code, from the first release to version 0.0.8.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <link rel="canonical" href="https://framedparadox.github.io/mulesoft-aes-vscode/changelog.html">
+  <link rel="icon" href="assets/img/aes.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/img/icon.png" type="image/png" sizes="128x128">
+  <link rel="apple-touch-icon" href="assets/img/icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="MuleSoft AES for VS Code">
+  <meta property="og:title" content="MuleSoft AES for VS Code: Changelog">
+  <meta property="og:description" content="What’s new in each release of MuleSoft AES & Secure Properties for VS Code.">
+  <meta property="og:url" content="https://framedparadox.github.io/mulesoft-aes-vscode/changelog.html">
+  <meta property="og:image" content="https://framedparadox.github.io/mulesoft-aes-vscode/assets/img/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.replace('no-js', 'js');
+      try {
+        var t = localStorage.getItem('mule-aes-theme');
+        if (t === 'light' || t === 'dark') d.dataset.theme = t;
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="assets/css/site.css">
+  <script src="assets/js/site.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="nav" data-open="false">
+    <nav class="nav-inner" aria-label="Primary">
+      <a class="brand" href="./" aria-label="MuleSoft AES home">
+        <img src="assets/img/icon.png" alt="" width="26" height="26">
+        <span>MuleSoft AES</span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="./#workflow">Features</a></li>
+        <li><a href="./#try">Try it</a></li>
+        <li><a href="./#algorithms">Algorithms</a></li>
+        <li><a href="./#privacy">Privacy</a></li>
+        <li><a href="docs.html">Docs</a></li>
+        <li><a href="changelog.html" aria-current="page">Changelog</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-label="Switch appearance">
+          <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1Z"/></svg>
+          <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+        </button>
+        <a class="btn btn--sm" href="./#install">Install</a>
+        <button class="icon-btn menu-toggle" type="button" aria-controls="nav-links" aria-expanded="false" aria-label="Menu">
+          <span class="bars" aria-hidden="true"><span class="bar"></span><span class="bar"></span></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <header class="page-hero">
+      <div class="wrap">
+        <span class="eyebrow">Changelog</span>
+        <h1 class="headline">What’s new.</h1>
+        <p class="intro">Every release, from the first build to today. <strong>Version 0.0.8 is the latest.</strong></p>
+        <div class="cta-row">
+          <a class="btn" href="https://marketplace.visualstudio.com/items?itemName=framedparadox.mule-aes" rel="noopener">Update in VS Code</a>
+          <a class="link-arrow" href="https://github.com/framedparadox/mulesoft-aes-vscode/releases" rel="noopener">All releases on GitHub</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="wrap releases">
+
+      <article class="release" id="v0.0.8" data-reveal>
+        <div class="release-meta">
+          <div class="ver">0.0.8</div>
+          <time datetime="2026-09-17">September 17, 2026</time>
+          <span class="badge badge--accent">Latest</span>
+        </div>
+        <div class="release-body">
+          <h2>Accessibility and reliability</h2>
+          <p>Keyboard reordering for KeyIdentifiers and a sturdier whole-file panel.</p>
+          <div class="change-group" data-kind="added">
+            <h3>Added</h3>
+            <ul>
+              <li>Accessible names on whole-file field checkboxes, taken from each field’s path and name.</li>
+              <li>Keyboard <strong>Move up</strong> / <strong>Move down</strong> controls for reordering KeyIdentifiers in Settings, alongside drag and drop.</li>
+            </ul>
+          </div>
+          <div class="change-group" data-kind="fixed">
+            <h3>Fixed</h3>
+            <ul>
+              <li>Whole-file panel ignores stale renders after handing the webview to the main AES screen.</li>
+              <li>Whole-file panel tags each field refresh with its operation and request, drops stale Encrypt/Decrypt toggles, and keeps Apply disabled until the matching refresh arrives.</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="release" id="v0.0.7" data-reveal>
+        <div class="release-meta">
+          <div class="ver">0.0.7</div>
+          <time datetime="2026-09-16">September 16, 2026</time>
+        </div>
+        <div class="release-body">
+          <h2>Quoted values and a simpler file workflow</h2>
+          <p>Decrypt now understands the quotes YAML needs, and selection is one checkbox away.</p>
+          <div class="change-group" data-kind="added">
+            <h3>Added</h3>
+            <ul>
+              <li>Quoted secure-value detection for decrypt (<code>"![…]"</code> and <code>'![…]'</code>) in YAML and properties files.</li>
+              <li>An <strong>AES Encrypt / Decrypt</strong> logo button on the whole-file panel that opens the main AES screen.</li>
+            </ul>
+          </div>
+          <div class="change-group" data-kind="changed">
+            <h3>Changed</h3>
+            <ul>
+              <li>The whole-file panel replaces <em>Select all</em>, <em>Clear</em> and <em>Refresh</em> with a single master checkbox (nothing selected by default). Decrypt mode now uses the same per-field selection as encrypt.</li>
+              <li>Both editor toolbar buttons are back for YAML and properties files: <code>aes.encryptDecrypt</code> and <code>aes.fileEncryptDecrypt</code>.</li>
+              <li>Removed automatic clipboard prefill from the main AES panel.</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="release" id="v0.0.6" data-reveal>
+        <div class="release-meta">
+          <div class="ver">0.0.6</div>
+          <time datetime="2026-07-10">July 10, 2026</time>
+        </div>
+        <div class="release-body">
+          <h2>Reorder keys, open beside the editor</h2>
+          <p>Put your KeyIdentifiers in the order you use them, and keep your file in view.</p>
+          <div class="change-group" data-kind="added">
+            <h3>Added</h3>
+            <ul>
+              <li><strong>Drag-to-reorder KeyIdentifiers</strong> in Settings. The saved order is used by every KeyIdentifier dropdown.</li>
+              <li>An editor toolbar button for the main AES screen on <code>.yaml</code>, <code>.yml</code> and <code>.properties</code> files, next to the whole-file button.</li>
+              <li>The AES panel opens <strong>beside the editor</strong>, and fills an empty Input Text from the clipboard.</li>
+              <li>An <strong>Open in sidebar</strong> button on the whole-file panel that reveals the MuleSoft AES view.</li>
+              <li>A new toolbar icon so the two editor buttons are easy to tell apart.</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="release" id="v0.0.5" data-reveal>
+        <div class="release-meta">
+          <div class="ver">0.0.5</div>
+          <time datetime="2026-06-11">June 11, 2026</time>
+        </div>
+        <div class="release-body">
+          <h2>Inline and whole-file encryption</h2>
+          <p>The extension moves into the editor.</p>
+          <div class="change-group" data-kind="added">
+            <h3>Added</h3>
+            <ul>
+              <li><strong>Whole-file workflow</strong> (<em>MuleSoft AES: Encrypt / Decrypt File</em>): scan the active YAML or properties file, pick the values to encrypt, and apply them in one edit. Each row shows name, value, path and line number.</li>
+              <li><strong>Inline selection actions</strong>: <em>Encrypt Selection</em> and <em>Decrypt Selection</em> in the editor context menu, using a saved KeyIdentifier or a one-off key.</li>
+              <li>An editor toolbar button for the whole-file workflow.</li>
+              <li>A compact editor-crypto mode in the sidebar.</li>
+              <li>Test coverage for field scanning and transforms.</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="release" id="v0.0.4" data-reveal>
+        <div class="release-meta">
+          <div class="ver">0.0.4</div>
+          <time datetime="2026-06-09">June 9, 2026</time>
+        </div>
+        <div class="release-body">
+          <h2>Save keys from the encrypt screen</h2>
+          <div class="change-group" data-kind="added">
+            <h3>Added</h3>
+            <ul>
+              <li>Typing a custom key on the AES or Secure Properties screen reveals a <strong>save</strong> button. Name it, and it’s stored as a KeyIdentifier and available on both screens immediately.</li>
+            </ul>
+          </div>
+          <div class="change-group" data-kind="changed">
+            <h3>Changed</h3>
+            <ul>
+              <li>Reworked the publish workflow and consolidated publishing notes into the README.</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="release" id="v0.0.3" data-reveal>
+        <div class="release-meta">
+          <div class="ver">0.0.3</div>
+          <time datetime="2026-06-03">June 3, 2026</time>
+        </div>
+        <div class="release-body">
+          <h2>The Secure Properties tool</h2>
+          <p>Multi-algorithm support with full generator parity.</p>
+          <div class="change-group" data-kind="added">
+            <h3>Added</h3>
+            <ul>
+              <li><strong>MuleSoft Secure Properties Encrypt / Decrypt</strong>: AES, Blowfish, DES, DESede, RC2 and RCA; CBC, CFB, ECB and OFB; and optional random IVs. At its defaults it matches the AES tool byte for byte.</li>
+              <li>Adaptive controls: <em>Use Random IVs</em> disables for ECB, and both mode and IV disable for RCA.</li>
+              <li>Test coverage for the new cipher logic.</li>
+            </ul>
+          </div>
+          <div class="change-group" data-kind="changed">
+            <h3>Changed</h3>
+            <ul>
+              <li>The new tool shares KeyIdentifier storage and the sidebar with the AES tool.</li>
+              <li>Fixed the Base64 tool’s icon background.</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="release" id="v0.0.1" data-reveal>
+        <div class="release-meta">
+          <div class="ver">0.0.1</div>
+          <time datetime="2026-06-02">June 2, 2026</time>
+          <span class="badge badge--muted">First release</span>
+        </div>
+        <div class="release-body">
+          <h2>Hello, MuleSoft AES</h2>
+          <div class="change-group" data-kind="added">
+            <h3>Added</h3>
+            <ul>
+              <li><strong>MuleSoft AES Encrypt / Decrypt</strong>: AES-128-CBC or AES-256-CBC by key length, PKCS5 padding, and an IV derived from the key, in MuleSoft’s <code>![base64]</code> format.</li>
+              <li><strong>Base64 Encode / Decode</strong> for text and files, with drag and drop and clipboard copy.</li>
+              <li><strong>Settings</strong> for KeyIdentifiers: DEV, FIT, UAT and PROD presets plus custom keys, stored in VS Code’s secret storage with masking.</li>
+              <li>The MuleSoft AES activity-bar sidebar.</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap wrap-wide">
+      <div class="footer-note">
+        <p>MuleSoft is a trademark of Salesforce, Inc. Visual Studio Code is a trademark of Microsoft Corporation. MuleSoft AES &amp; Secure Properties is an independent open‑source project and is not affiliated with, sponsored by, or endorsed by Salesforce, MuleSoft or Microsoft.</p>
+      </div>
+      <div class="footer-bottom">
+        <p>Copyright © <span data-year>2026</span> framedparadox. Released under the MIT License.</p>
+        <div class="legal"><a href="privacy.html">Privacy</a><a href="https://github.com/framedparadox/mulesoft-aes-vscode/blob/main/LICENSE" rel="noopener">License</a><a href="docs.html">Documentation</a></div>
+        <div class="seg seg--sm theme-seg" data-theme-seg role="group" aria-label="Appearance">
+          <button type="button" data-value="auto" aria-pressed="true">Auto</button>
+          <button type="button" data-value="light" aria-pressed="false">Light</button>
+          <button type="button" data-value="dark" aria-pressed="false">Dark</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

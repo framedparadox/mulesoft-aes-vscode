@@ -1,0 +1,13 @@
+{
+  "name": "MuleSoft AES & Secure Properties for VS Code",
+  "short_name": "MuleSoft AES",
+  "description": "Encrypt and decrypt MuleSoft secure configuration properties inside VS Code.",
+  "start_url": "./",
+  "display": "browser",
+  "background_color": "#ffffff",
+  "theme_color": "#0071e3",
+  "icons": [
+    { "src": "assets/img/icon.png", "sizes": "128x128", "type": "image/png" },
+    { "src": "assets/img/aes.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

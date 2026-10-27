@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Documentation · MuleSoft AES for VS Code</title>
+  <meta name="description" content="Documentation for MuleSoft AES & Secure Properties for VS Code: installation, quick start, the AES, Secure Properties and Base64 tools, editor workflows, key management, commands, algorithms and troubleshooting.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <link rel="canonical" href="https://framedparadox.github.io/mulesoft-aes-vscode/docs.html">
+  <link rel="icon" href="assets/img/aes.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/img/icon.png" type="image/png" sizes="128x128">
+  <link rel="apple-touch-icon" href="assets/img/icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="MuleSoft AES for VS Code">
+  <meta property="og:title" content="MuleSoft AES for VS Code: Documentation">
+  <meta property="og:description" content="Install, configure and use MuleSoft AES & Secure Properties for VS Code.">
+  <meta property="og:url" content="https://framedparadox.github.io/mulesoft-aes-vscode/docs.html">
+  <meta property="og:image" content="https://framedparadox.github.io/mulesoft-aes-vscode/assets/img/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.replace('no-js', 'js');
+      try {
+        var t = localStorage.getItem('mule-aes-theme');
+        if (t === 'light' || t === 'dark') d.dataset.theme = t;
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="assets/css/site.css">
+  <script src="assets/js/site.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="nav" data-open="false">
+    <nav class="nav-inner" aria-label="Primary">
+      <a class="brand" href="./" aria-label="MuleSoft AES home">
+        <img src="assets/img/icon.png" alt="" width="26" height="26">
+        <span>MuleSoft AES</span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="./#workflow">Features</a></li>
+        <li><a href="./#try">Try it</a></li>
+        <li><a href="./#algorithms">Algorithms</a></li>
+        <li><a href="./#privacy">Privacy</a></li>
+        <li><a href="docs.html" aria-current="page">Docs</a></li>
+        <li><a href="changelog.html">Changelog</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-label="Switch appearance">
+          <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1Z"/></svg>
+          <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+        </button>
+        <a class="btn btn--sm" href="./#install">Install</a>
+        <button class="icon-btn menu-toggle" type="button" aria-controls="nav-links" aria-expanded="false" aria-label="Menu">
+          <span class="bars" aria-hidden="true"><span class="bar"></span><span class="bar"></span></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <header class="page-hero">
+      <div class="wrap wrap-wide">
+        <span class="eyebrow">Documentation</span>
+        <h1 class="headline">Everything you need to&nbsp;know.</h1>
+        <p class="intro">From first install to every algorithm, mode and command. <strong>Version 0.0.8</strong> for VS Code 1.105.0 and later.</p>
+      </div>
+    </header>
+
+    <div class="wrap wrap-wide docs">
+      <!-- Desktop table of contents -->
+      <nav class="toc" aria-label="On this page" data-spy>
+        <div class="toc-group">
+          <h2>Getting started</h2>
+          <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#installation">Installation</a></li>
+            <li><a href="#quick-start">Quick start</a></li>
+          </ul>
+        </div>
+        <div class="toc-group">
+          <h2>Tools</h2>
+          <ul>
+            <li><a href="#aes-tool">MuleSoft AES</a></li>
+            <li><a href="#secure-properties">Secure Properties</a></li>
+            <li><a href="#base64">Base64</a></li>
+          </ul>
+        </div>
+        <div class="toc-group">
+          <h2>In the editor</h2>
+          <ul>
+            <li><a href="#editor-toolbar">Editor toolbar</a></li>
+            <li><a href="#selection-actions">Selection actions</a></li>
+            <li><a href="#whole-file">Whole-file workflow</a></li>
+          </ul>
+        </div>
+        <div class="toc-group">
+          <h2>Keys</h2>
+          <ul>
+            <li><a href="#key-management">Key management</a></li>
+          </ul>
+        </div>
+        <div class="toc-group">
+          <h2>Reference</h2>
+          <ul>
+            <li><a href="#commands">Commands</a></li>
+            <li><a href="#algorithms">Algorithms</a></li>
+            <li><a href="#modes">Modes &amp; IVs</a></li>
+            <li><a href="#output-format">Output format</a></li>
+            <li><a href="#runtime">Runtime availability</a></li>
+          </ul>
+        </div>
+        <div class="toc-group">
+          <h2>Help</h2>
+          <ul>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="#security">Security</a></li>
+            <li><a href="#troubleshooting">Troubleshooting</a></li>
+            <li><a href="#requirements">Requirements</a></li>
+            <li><a href="#support">Support</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <div>
+        <!-- Mobile table of contents -->
+        <details class="toc-mobile">
+          <summary>On this page <span>Show ▾</span></summary>
+          <nav class="toc" aria-label="On this page (mobile)" data-spy>
+            <ul>
+              <li><a href="#overview">Overview</a></li>
+              <li><a href="#installation">Installation</a></li>
+              <li><a href="#quick-start">Quick start</a></li>
+              <li><a href="#aes-tool">MuleSoft AES</a></li>
+              <li><a href="#secure-properties">Secure Properties</a></li>
+              <li><a href="#base64">Base64</a></li>
+              <li><a href="#editor-toolbar">Editor toolbar</a></li>
+              <li><a href="#selection-actions">Selection actions</a></li>
+              <li><a href="#whole-file">Whole-file workflow</a></li>
+              <li><a href="#key-management">Key management</a></li>
+              <li><a href="#commands">Commands</a></li>
+              <li><a href="#algorithms">Algorithms</a></li>
+              <li><a href="#modes">Modes &amp; IVs</a></li>
+              <li><a href="#output-format">Output format</a></li>
+              <li><a href="#runtime">Runtime availability</a></li>
+              <li><a href="#examples">Examples</a></li>
+              <li><a href="#security">Security</a></li>
+              <li><a href="#troubleshooting">Troubleshooting</a></li>
+              <li><a href="#requirements">Requirements</a></li>
+              <li><a href="#support">Support</a></li>
+            </ul>
+          </nav>
+        </details>
+
+        <article class="prose">
+
+          <!-- ======================= Overview ======================= -->
+          <section id="overview">
+            <h2><a class="anchor" href="#overview">Overview</a></h2>
+            <p class="lead">A VS Code extension for encrypting and decrypting MuleSoft secure configuration properties without leaving your editor. All cryptography runs locally. Keys and KeyIdentifier names are held only in VS Code’s secret storage and are never transmitted.</p>
+            <p>The extension bundles three tools, all reachable from the <strong>MuleSoft AES</strong> icon in the activity bar:</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Tool</th><th>Algorithms</th><th>Modes</th><th>Random IV</th><th>Editor integration</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>MuleSoft AES Encrypt / Decrypt</strong></td><td>AES-128 / AES-256</td><td>CBC</td><td>No (derived IV)</td><td>Toolbar, right-click, whole-file workflow</td></tr>
+                  <tr><td><strong>Secure Properties Encrypt / Decrypt</strong></td><td>AES, Blowfish, DES, DESede, RC2, RCA</td><td>CBC, CFB, ECB, OFB</td><td>Optional</td><td>Sidebar and Command Palette</td></tr>
+                  <tr><td><strong>Base64 Encode / Decode</strong></td><td>—</td><td>—</td><td>—</td><td>Sidebar and Command Palette</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>The two encryption tools are independent screens. With its defaults (AES / CBC / no random IV), the Secure Properties tool produces output that is <strong>byte-for-byte identical</strong> to the AES tool, so the two are interchangeable for standard values.</p>
+          </section>
+
+          <!-- ======================= Installation ======================= -->
+          <section id="installation">
+            <h2><a class="anchor" href="#installation">Installation</a></h2>
+            <p>Pick whichever source suits your editor.</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Source</th><th>How</th></tr></thead>
+                <tbody>
+                  <tr><td><a href="https://marketplace.visualstudio.com/items?itemName=framedparadox.mule-aes" rel="noopener">VS Code Marketplace</a></td><td>Open Extensions (<kbd>⇧⌘X</kbd> / <kbd>Ctrl+Shift+X</kbd>), search for <strong>MuleSoft AES</strong>, then select <strong>Install</strong>.</td></tr>
+                  <tr><td>Command line</td><td>Run <code>code --install-extension framedparadox.mule-aes</code></td></tr>
+                  <tr><td><a href="https://open-vsx.org/extension/framedparadox/mule-aes" rel="noopener">Open VSX</a></td><td>For VSCodium, Gitpod, Eclipse Theia and other non-Microsoft builds.</td></tr>
+                  <tr><td><a href="https://github.com/framedparadox/mulesoft-aes-vscode/releases" rel="noopener">GitHub Releases</a></td><td>Download the <code>.vsix</code>, then choose <strong>Extensions › ⋯ › Install from VSIX…</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <pre><code>code --install-extension framedparadox.mule-aes</code><button class="copy-btn" type="button" data-copy aria-label="Copy command"><svg class="i-copy" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="1.8"/><path d="M11 5V3.8A1.3 1.3 0 0 0 9.7 2.5H3.8A1.3 1.3 0 0 0 2.5 3.8v5.9A1.3 1.3 0 0 0 3.8 11H5"/></svg><svg class="i-check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7"/></svg><span class="label">Copy</span></button></pre>
+          </section>
+
+          <!-- ======================= Quick start ======================= -->
+          <section id="quick-start">
+            <h2><a class="anchor" href="#quick-start">Quick start</a></h2>
+            <h3>From the sidebar</h3>
+            <ol>
+              <li>Click the <strong>MuleSoft AES</strong> icon in the activity bar.</li>
+              <li>Open <strong>Settings</strong> and configure your encryption keys.</li>
+              <li>Pick a tool: <strong>MuleSoft AES Encrypt / Decrypt</strong> for standard AES/CBC values, or <strong>Secure Properties Encrypt / Decrypt</strong> for other algorithms, modes or random IVs.</li>
+              <li>Enter your text, choose a KeyIdentifier (and, for Secure Properties, the algorithm, mode and IV settings), then click <strong>Encrypt</strong> or <strong>Decrypt</strong>.</li>
+              <li>Use <strong>Copy to Clipboard</strong> to grab the result.</li>
+            </ol>
+            <h3>In a YAML or properties editor</h3>
+            <ol>
+              <li>Open a <code>.yaml</code>, <code>.yml</code> or <code>.properties</code> file.</li>
+              <li>Select a value, right-click, and choose <strong>MuleSoft AES: Encrypt Selection</strong> or <strong>MuleSoft AES: Decrypt Selection</strong>.</li>
+              <li>Or click <strong>MuleSoft AES: Encrypt / Decrypt File</strong> in the editor toolbar to open the whole-file workflow beside the editor.</li>
+            </ol>
+            <div class="cards-2">
+              <a href="./#try"><b>Try it in your browser →</b><span>A live demo of the AES routine, no install needed.</span></a>
+              <a href="#examples"><b>See worked examples →</b><span>Encrypt a password, a whole file, or use random IVs.</span></a>
+            </div>
+          </section>
+
+          <!-- ======================= AES tool ======================= -->
+          <section id="aes-tool">
+            <span class="section-kicker">Tools</span>
+            <h2><a class="anchor" href="#aes-tool">MuleSoft AES Encrypt / Decrypt</a></h2>
+            <div class="doc-tool-head"><img src="assets/img/aes.svg" alt="" width="48" height="48"><p class="lead" style="margin:0">The streamlined option for projects using MuleSoft’s standard AES configuration.</p></div>
+            <ul>
+              <li><strong>MuleSoft compatible:</strong> AES-128-CBC or AES-256-CBC with PKCS5 padding.</li>
+              <li><strong>Key-driven strength:</strong> a key of exactly 32 characters selects AES-256. Any other key, including 16 or 24 characters, uses AES-128. There is no AES-192 mode in this tool; use <a href="#secure-properties">Secure Properties</a> if you need it.</li>
+              <li><strong>Derived IV:</strong> taken from the first 16 characters of the key, so encryption is deterministic: identical input always yields identical output.</li>
+              <li><strong>Output format:</strong> <code>![base64EncodedString]</code>, ready to paste into MuleSoft config files.</li>
+              <li><strong>Decrypt input:</strong> accepts raw Base64 or the wrapped <code>![…]</code> format.</li>
+              <li><strong>Opens beside the editor</strong> from the toolbar, so your file stays visible.</li>
+            </ul>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Property</th><th>Value</th></tr></thead>
+                <tbody>
+                  <tr><td>Algorithm</td><td>AES-128-CBC or AES-256-CBC</td></tr>
+                  <tr><td>Block size</td><td>128 bits</td></tr>
+                  <tr><td>Padding</td><td>PKCS5</td></tr>
+                  <tr><td>IV</td><td>Derived from the first 16 characters of the key</td></tr>
+                  <tr><td>Output encoding</td><td>Base64, wrapped in <code>![ … ]</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="callout">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10" cy="10" r="7.5"/><path d="M10 9v5M10 6.2v.1" stroke-linecap="round"/></svg>
+              <p>Keys must be at least 16 characters. Use exactly 32 characters to get AES-256; longer keys fall back to AES-128 using their first 16 bytes.</p>
+            </div>
+          </section>
+
+          <!-- ======================= Secure Properties ======================= -->
+          <section id="secure-properties">
+            <h2><a class="anchor" href="#secure-properties">Secure Properties Encrypt / Decrypt</a></h2>
+            <div class="doc-tool-head"><img src="assets/img/aes-plus.svg" alt="" width="48" height="48"><p class="lead" style="margin:0">A full-featured tool that goes beyond the standard AES/CBC workflow.</p></div>
+            <p>Use it when your configuration needs a different algorithm (Blowfish, DES, DESede, RC2 or RCA), a cipher mode other than CBC (CFB, ECB or OFB), or random initialization vectors for non-deterministic encryption. The interface follows the same layout as the AES tool, with an extra options row.</p>
+            <h3>Options</h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Control</th><th>Type</th><th>Choices</th><th>Default</th></tr></thead>
+                <tbody>
+                  <tr><td>Algorithm</td><td>Dropdown</td><td>AES, Blowfish, DES, DESede, RC2, RCA</td><td>AES</td></tr>
+                  <tr><td>State (Mode)</td><td>Dropdown</td><td>CBC, CFB, ECB, OFB</td><td>CBC</td></tr>
+                  <tr><td>Use Random IVs</td><td>Checkbox</td><td>On / off</td><td>Off</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Adaptive controls</h3>
+            <p>The options row prevents invalid combinations:</p>
+            <ul>
+              <li><strong>ECB</strong> uses no IV, so <strong>Use Random IVs</strong> is disabled.</li>
+              <li><strong>RCA (RC4)</strong> is a stream cipher with no mode and no IV, so both <strong>State (Mode)</strong> and <strong>Use Random IVs</strong> are disabled.</li>
+            </ul>
+            <p>See the <a href="#algorithms">algorithm reference</a> for key requirements and the <a href="#modes">modes &amp; IVs reference</a> for how IVs are handled. You can also <a href="./#algorithms">explore the matrix interactively</a>.</p>
+          </section>
+
+          <!-- ======================= Base64 ======================= -->
+          <section id="base64">
+            <h2><a class="anchor" href="#base64">Base64 Encode / Decode</a></h2>
+            <div class="doc-tool-head"><img src="assets/img/base64.svg" alt="" width="48" height="48"><p class="lead" style="margin:0">Quick text and file Base64, next to your keys.</p></div>
+            <ul>
+              <li>Encode plain text or files to Base64.</li>
+              <li>Decode Base64 strings back to plain text.</li>
+              <li>Drag and drop or browse for files, and copy results to the clipboard.</li>
+            </ul>
+            <div class="callout">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10" cy="10" r="7.5"/><path d="M10 9v5M10 6.2v.1" stroke-linecap="round"/></svg>
+              <p>In file mode, <strong>Decode</strong> reads from the output box (where the encoded Base64 was produced or pasted), not from the file-drop input. Paste or edit the Base64 there before decoding.</p>
+            </div>
+          </section>
+
+          <!-- ======================= Editor toolbar ======================= -->
+          <section id="editor-toolbar">
+            <span class="section-kicker">In the editor</span>
+            <h2><a class="anchor" href="#editor-toolbar">Editor toolbar</a></h2>
+            <p>Two toolbar buttons appear automatically when you edit <code>.yaml</code>, <code>.yml</code> or <code>.properties</code> files:</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Button</th><th>Command</th><th>Opens</th></tr></thead>
+                <tbody>
+                  <tr><td><img src="assets/img/aes.svg" alt="" width="20" height="20" style="display:inline;vertical-align:-4px;margin-right:6px">Encrypt / Decrypt</td><td><code>aes.encryptDecrypt</code></td><td>The main MuleSoft AES screen, beside the editor</td></tr>
+                  <tr><td><img src="assets/img/aes2.svg" alt="" width="20" height="20" style="display:inline;vertical-align:-4px;margin-right:6px">Encrypt / Decrypt File</td><td><code>aes.fileEncryptDecrypt</code></td><td>The <a href="#whole-file">whole-file workflow</a>, beside the editor</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>The Secure Properties tool has no editor toolbar button or context-menu entry by design. Open it from the sidebar or the Command Palette.</p>
+          </section>
+
+          <!-- ======================= Selection actions ======================= -->
+          <section id="selection-actions">
+            <h2><a class="anchor" href="#selection-actions">Selection actions</a></h2>
+            <p>Select a value in a supported file, right-click, and choose <strong>MuleSoft AES: Encrypt Selection</strong> or <strong>MuleSoft AES: Decrypt Selection</strong>. A quick pick asks you to <em>Select a KeyIdentifier or input key</em>:</p>
+            <ul>
+              <li>Pick a saved KeyIdentifier (only those with a key configured are listed), or</li>
+              <li>Choose <strong>Input key manually</strong> to type a one-off key that is used for this operation only and never stored.</li>
+            </ul>
+            <p>Only the selected text is replaced. These entries appear only in the editor context menu, and only when text is selected in a <code>.yaml</code>, <code>.yml</code> or <code>.properties</code> file.</p>
+          </section>
+
+          <!-- ======================= Whole file ======================= -->
+          <section id="whole-file">
+            <h2><a class="anchor" href="#whole-file">Whole-file workflow</a></h2>
+            <p>Encrypt or decrypt many fields in the active file with a single edit.</p>
+            <ol>
+              <li>Click <strong>MuleSoft AES: Encrypt / Decrypt File</strong> in the editor toolbar. The panel opens beside the editor.</li>
+              <li>Choose <strong>Encrypt</strong> or <strong>Decrypt</strong>.</li>
+              <li>Choose a KeyIdentifier (its key is shown masked, as on the main AES screen) or input a key manually.</li>
+              <li>Tick the fields you want. The <strong>Select all</strong> checkbox selects or clears every row; nothing is selected by default.</li>
+              <li>Click <strong>Encrypt selected values</strong> or <strong>Decrypt selected values</strong> to apply every replacement in one edit.</li>
+            </ol>
+            <p>Each row shows the field name on the left, and its value (truncated past 120 characters) plus the full path and line number on the right. A logo button in the panel header opens the main AES tool.</p>
+            <ul>
+              <li><strong>Encrypt mode</strong> lists plain scalar values that are not already wrapped in <code>![ … ]</code>.</li>
+              <li><strong>Decrypt mode</strong> lists complete secure values only, including quoted ones such as <code>"![…]"</code> and <code>'![…]'</code>.</li>
+            </ul>
+          </section>
+
+          <!-- ======================= Keys ======================= -->
+          <section id="key-management">
+            <span class="section-kicker">Keys</span>
+            <h2><a class="anchor" href="#key-management">Key management</a></h2>
+            <p class="lead">Both encryption tools draw from the same set of <strong>KeyIdentifiers</strong>, managed from the <strong>Settings</strong> screen in the sidebar.</p>
+            <ul>
+              <li><strong>Presets</strong> for common environments: DEV, FIT, UAT and PROD.</li>
+              <li><strong>Custom KeyIdentifiers:</strong> add your own named keys.</li>
+              <li><strong>Ordering:</strong> drag rows by their handle, or use the <strong>Move up</strong> / <strong>Move down</strong> buttons from the keyboard, to set the order used in every KeyIdentifier dropdown.</li>
+              <li><strong>Secure storage:</strong> keys live in VS Code’s built-in secret storage and never leave the machine.</li>
+              <li><strong>Visibility toggle:</strong> show or hide keys, with partial masking.</li>
+            </ul>
+            <p>Selecting a KeyIdentifier fills in (and masks) its key, and locks the field to that value. Typing, pressing <kbd>Backspace</kbd> / <kbd>Delete</kbd>, or pasting into the field switches the dropdown back to <strong>Custom</strong> and clears it, so you can enter a one-off key without reselecting Custom first. Changes saved in Settings refresh any open encryption panels automatically.</p>
+            <h3>Save a key from the encrypt screen</h3>
+            <p>When you type a custom key, a <strong>save</strong> button (disk icon) appears between the show/hide toggle and the KeyIdentifier dropdown. Click it, enter a <strong>Key Identifier</strong> name and save. The key is stored in secret storage and added to the dropdown on both encryption screens immediately. In the dialog, press <kbd>Enter</kbd> to confirm or <kbd>Esc</kbd> to cancel.</p>
+            <h3>Refresh keys</h3>
+            <p>Each encryption screen has a <strong>refresh</strong> button in the top-right corner that reloads KeyIdentifiers from storage, so new keys appear without closing and reopening the panel.</p>
+          </section>
+
+          <!-- ======================= Commands ======================= -->
+          <section id="commands">
+            <span class="section-kicker">Reference</span>
+            <h2><a class="anchor" href="#commands">Commands</a></h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Command</th><th>Title</th><th>Where</th></tr></thead>
+                <tbody>
+                  <tr><td><code>aes.encryptDecrypt</code></td><td>MuleSoft AES Encrypt / Decrypt</td><td>Sidebar, editor toolbar, palette</td></tr>
+                  <tr><td><code>aes.encryptSelection</code></td><td>MuleSoft AES: Encrypt Selection</td><td>Editor context menu, palette</td></tr>
+                  <tr><td><code>aes.decryptSelection</code></td><td>MuleSoft AES: Decrypt Selection</td><td>Editor context menu, palette</td></tr>
+                  <tr><td><code>aes.fileEncryptDecrypt</code></td><td>MuleSoft AES: Encrypt / Decrypt File</td><td>Editor toolbar, palette</td></tr>
+                  <tr><td><code>aesEnhanced.encryptDecrypt</code></td><td>MuleSoft Secure Properties Encrypt / Decrypt</td><td>Sidebar, palette</td></tr>
+                  <tr><td><code>base64.encodeDecode</code></td><td>Base64 Encode / Decode</td><td>Sidebar, palette</td></tr>
+                  <tr><td><code>aes.openSettings</code></td><td>MuleSoft AES: Settings</td><td>Sidebar</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- ======================= Algorithms ======================= -->
+          <section id="algorithms">
+            <h2><a class="anchor" href="#algorithms">Algorithms</a></h2>
+            <p>Every algorithm in the Secure Properties tool shares one floor enforced by the UI: <strong>keys must be at least 16 characters</strong>. Some ciphers only consume a prefix of the key; the rest is ignored.</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Algorithm</th><th>Description</th><th>IV size</th><th>Key requirement</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>AES</strong></td><td>Advanced Encryption Standard (default)</td><td>16 bytes</td><td>16 / 24 / 32 chars → AES-128 / 192 / 256</td></tr>
+                  <tr><td><strong>Blowfish</strong></td><td>Bruce Schneier’s block cipher</td><td>8 bytes</td><td>≥ 16 chars (up to 56 bytes used)</td></tr>
+                  <tr><td><strong>DES</strong></td><td>Data Encryption Standard (legacy)</td><td>8 bytes</td><td>≥ 16 chars (only the first 8 bytes used)</td></tr>
+                  <tr><td><strong>DESede</strong></td><td>Triple DES (3DES)</td><td>8 bytes</td><td>≥ 24 chars</td></tr>
+                  <tr><td><strong>RC2</strong></td><td>Rivest Cipher 2</td><td>8 bytes</td><td>≥ 16 chars</td></tr>
+                  <tr><td><strong>RCA</strong></td><td>RC4 / ARCFOUR stream cipher</td><td>None</td><td>≥ 16 chars</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="callout callout--warn">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M10 2.8 18 17H2z"/><path d="M10 8v4M10 14.4v.1" stroke-linecap="round"/></svg>
+              <p>Unlike the Secure Properties tool, the standalone AES tool does not support AES-192. A 24-character key there still resolves to AES-128, using only its first 16 bytes.</p>
+            </div>
+          </section>
+
+          <!-- ======================= Modes & IVs ======================= -->
+          <section id="modes">
+            <h2><a class="anchor" href="#modes">Cipher modes &amp; IVs</a></h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Mode</th><th>Name</th><th>Uses an IV?</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>CBC</strong></td><td>Cipher Block Chaining (default)</td><td>Yes</td></tr>
+                  <tr><td><strong>CFB</strong></td><td>Cipher Feedback</td><td>Yes</td></tr>
+                  <tr><td><strong>ECB</strong></td><td>Electronic Codebook</td><td>No</td></tr>
+                  <tr><td><strong>OFB</strong></td><td>Output Feedback</td><td>Yes</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Initialization vectors</h3>
+            <ul>
+              <li><strong>Derived IV (default):</strong> the IV is the first <em>N</em> characters of the key, where <em>N</em> is the algorithm’s IV size (16 for AES, 8 for the others). Encryption is deterministic, matching the AES tool.</li>
+              <li><strong>Random IV (checkbox on):</strong> a cryptographically random IV is generated for each encryption, prepended to the ciphertext before Base64 encoding, and read back automatically during decryption. Each run produces different ciphertext, which is generally more secure.</li>
+            </ul>
+          </section>
+
+          <!-- ======================= Output format ======================= -->
+          <section id="output-format">
+            <h2><a class="anchor" href="#output-format">Output format</a></h2>
+            <p>All output is wrapped in MuleSoft’s secure-properties format, <code>![base64String]</code>. With random IVs enabled, the IV bytes sit at the front of the payload inside the wrapper, keeping each value a single, self-contained token.</p>
+            <pre><code><span class="c"># application.yaml</span>
+<span class="k">db</span>:
+  <span class="k">password</span>: <span class="s">"![IC/nBJeEeAJg7vYzxVCcYJ+3DJZpthwL114HH38lEhM=]"</span></code></pre>
+            <p>Decrypt input accepts raw Base64, the wrapped <code>![…]</code> format, and values surrounded by double or single quotes (YAML requires quotes around <code>![…]</code> because a bare <code>!</code> is a tag indicator).</p>
+          </section>
+
+          <!-- ======================= Runtime ======================= -->
+          <section id="runtime">
+            <h2><a class="anchor" href="#runtime">Runtime availability</a></h2>
+            <p>Ciphers run through Node.js and OpenSSL as provided by the VS Code runtime.</p>
+            <ul>
+              <li><strong>Always available:</strong> AES (all modes) and DESede (all modes).</li>
+              <li><strong>May require the OpenSSL “legacy” provider:</strong> Blowfish, DES, RC2 and RCA (RC4).</li>
+            </ul>
+            <p>If the runtime can’t provide a selected algorithm, the tool returns a clear, non-crashing error, for example <code>Cipher "bf-cbc" is not supported by this runtime</code>, rather than failing silently. The full algorithm set is always offered for fidelity with the MuleSoft generator.</p>
+          </section>
+
+          <!-- ======================= Examples ======================= -->
+          <section id="examples">
+            <span class="section-kicker">Help</span>
+            <h2><a class="anchor" href="#examples">Examples</a></h2>
+            <h3>Encrypt a selected database password</h3>
+            <ol>
+              <li>Open <code>application.yaml</code>.</li>
+              <li>Select <code>myDatabasePassword</code>, right-click, and choose <strong>MuleSoft AES: Encrypt Selection</strong>.</li>
+              <li>Select the <code>PROD</code> KeyIdentifier, or input the key manually.</li>
+              <li>The selection is replaced in place:</li>
+            </ol>
+            <pre><code><span class="k">db</span>:
+  <span class="k">password</span>: <span class="s">![EncryptedValueHere]</span>
+  <span class="k">connectString</span>: <span class="s">"![EncryptedValueHere]"</span></code></pre>
+            <h3>Encrypt several values in a file</h3>
+            <ol>
+              <li>Open <code>application.yaml</code> or <code>application.properties</code>.</li>
+              <li>Click <strong>MuleSoft AES: Encrypt / Decrypt File</strong> in the editor toolbar.</li>
+              <li>Keep <strong>Encrypt</strong> selected, choose a KeyIdentifier or input a key, and tick the fields to encrypt (or use <strong>Select all</strong>).</li>
+              <li>Click <strong>Encrypt selected values</strong> to apply every replacement in one edit.</li>
+            </ol>
+            <h3>Decrypt selected secure values in a file</h3>
+            <ol>
+              <li>Open the file workflow beside a YAML or properties editor and switch to <strong>Decrypt</strong>.</li>
+              <li>Choose the same KeyIdentifier or manual key used for encryption.</li>
+              <li>Tick the secure values to decrypt (or use <strong>Select all</strong>) and click <strong>Decrypt selected values</strong>.</li>
+            </ol>
+            <h3>Encrypt with random IVs (Secure Properties)</h3>
+            <ol>
+              <li>Open <strong>Secure Properties Encrypt / Decrypt</strong> from the sidebar.</li>
+              <li>Choose an algorithm and mode (for example AES / CBC) and check <strong>Use Random IVs</strong>.</li>
+              <li>Select a KeyIdentifier or type a custom key, enter your secret, and click <strong>Encrypt</strong>. Encrypting the same value twice yields two different tokens that both decrypt to the original.</li>
+            </ol>
+            <h3>Decrypt an existing value</h3>
+            <ol>
+              <li>Paste the <code>![ … ]</code> value into <strong>Input Text</strong>.</li>
+              <li>Select the KeyIdentifier used to encrypt it.</li>
+              <li>In the Secure Properties tool, also match the algorithm, mode and <strong>Use Random IVs</strong> setting that produced the value.</li>
+              <li>Click <strong>Decrypt</strong>.</li>
+            </ol>
+          </section>
+
+          <!-- ======================= Security ======================= -->
+          <section id="security">
+            <h2><a class="anchor" href="#security">Security</a></h2>
+            <ul>
+              <li>Keys are stored in VS Code’s secure storage, which maps to the OS keychain: Windows Credential Manager, macOS Keychain, or <code>pass</code> / Secret Service on Linux.</li>
+              <li>All encryption and decryption happens locally. No keys or data are sent over the network, and there are no external API calls.</li>
+              <li>Keys are partially masked in the UI.</li>
+            </ul>
+            <h3>Best practices</h3>
+            <ol>
+              <li>Use strong keys. 32 characters is recommended and unlocks AES-256.</li>
+              <li>Prefer random IVs for new secrets where your MuleSoft runtime supports them.</li>
+              <li>Rotate keys periodically in production.</li>
+              <li>Use different keys per environment (DEV / FIT / UAT / PROD).</li>
+              <li>Avoid legacy algorithms (DES, RC2, RC4) for new data. They exist for compatibility with existing values only.</li>
+            </ol>
+            <p>Found a vulnerability? Please report it privately through <a href="https://github.com/framedparadox/mulesoft-aes-vscode/security" rel="noopener">GitHub’s security advisories</a> rather than a public issue.</p>
+          </section>
+
+          <!-- ======================= Troubleshooting ======================= -->
+          <section id="troubleshooting">
+            <h2><a class="anchor" href="#troubleshooting">Troubleshooting</a></h2>
+            <h4>Blowfish / DES / RC2 / RCA returns “not supported by this runtime”.</h4>
+            <p>These legacy algorithms depend on the OpenSSL “legacy” provider, which may not be enabled in your VS Code runtime. AES and DESede always work; use AES for new secrets.</p>
+            <h4>Decrypted output is garbage, or decryption fails.</h4>
+            <p>Make sure every setting matches the values used to encrypt: the key or KeyIdentifier and, in the Secure Properties tool, the algorithm, mode and <strong>Use Random IVs</strong> option.</p>
+            <h4>The same input gives a different encrypted value each time.</h4>
+            <p>That’s expected when <strong>Use Random IVs</strong> is checked. Uncheck it for deterministic output.</p>
+            <h4>An encryption key isn’t saving.</h4>
+            <p>Confirm VS Code can access secret storage, then restart VS Code.</p>
+            <h4>The AES editor buttons don’t appear.</h4>
+            <p>They only show for <code>.yaml</code>, <code>.yml</code> and <code>.properties</code> files. The Secure Properties tool has no editor button by design; open it from the sidebar.</p>
+            <h4>No fields appear in the file workflow.</h4>
+            <p>Encrypt mode lists plain scalar values that aren’t already wrapped in <code>![ … ]</code>. Decrypt mode lists complete secure values only.</p>
+          </section>
+
+          <!-- ======================= Requirements ======================= -->
+          <section id="requirements">
+            <h2><a class="anchor" href="#requirements">Requirements</a></h2>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><td><strong>VS Code</strong></td><td>1.105.0 or later</td></tr>
+                  <tr><td><strong>Platforms</strong></td><td>macOS, Windows and Linux</td></tr>
+                  <tr><td><strong>Node.js</strong></td><td>v18 or later (development only)</td></tr>
+                  <tr><td><strong>Disk space</strong></td><td>Less than 5 MB</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- ======================= Support ======================= -->
+          <section id="support">
+            <h2><a class="anchor" href="#support">Support &amp; contributing</a></h2>
+            <p>Contributions are welcome. Please submit bugs and enhancement requests through the repository.</p>
+            <div class="cards-2">
+              <a href="https://github.com/framedparadox/mulesoft-aes-vscode/issues" rel="noopener"><b>Report an issue →</b><span>Bugs, questions and feature requests.</span></a>
+              <a href="https://github.com/framedparadox/mulesoft-aes-vscode" rel="noopener"><b>Source on GitHub →</b><span>MIT licensed. Pull requests welcome.</span></a>
+              <a href="https://docs.mulesoft.com/mule-runtime/latest/secure-configuration-properties" rel="noopener"><b>MuleSoft docs →</b><span>Secure Configuration Properties reference.</span></a>
+              <a href="changelog.html"><b>Changelog →</b><span>What’s new in each release.</span></a>
+            </div>
+          </section>
+
+          <nav class="doc-pager" aria-label="More">
+            <a class="link-arrow" href="./">Back to overview</a>
+            <a class="link-arrow" href="changelog.html">Changelog</a>
+          </nav>
+        </article>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap wrap-wide">
+      <div class="footer-note">
+        <p>MuleSoft is a trademark of Salesforce, Inc. Visual Studio Code is a trademark of Microsoft Corporation. MuleSoft AES &amp; Secure Properties is an independent open‑source project and is not affiliated with, sponsored by, or endorsed by Salesforce, MuleSoft or Microsoft.</p>
+      </div>
+      <div class="footer-bottom">
+        <p>Copyright © <span data-year>2026</span> framedparadox. Released under the MIT License.</p>
+        <div class="legal"><a href="privacy.html">Privacy</a><a href="https://github.com/framedparadox/mulesoft-aes-vscode/blob/main/LICENSE" rel="noopener">License</a><a href="changelog.html">Changelog</a></div>
+        <div class="seg seg--sm theme-seg" data-theme-seg role="group" aria-label="Appearance">
+          <button type="button" data-value="auto" aria-pressed="true">Auto</button>
+          <button type="button" data-value="light" aria-pressed="false">Light</button>
+          <button type="button" data-value="dark" aria-pressed="false">Dark</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
