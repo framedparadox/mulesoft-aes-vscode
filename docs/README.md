@@ -20,7 +20,7 @@ the 1200×630 `og-image.png`), `site.webmanifest`, `robots.txt`, `sitemap.xml`.
 ## Preview locally
 
 ```bash
-python3 -m http.server 4173 --directory website
+python3 -m http.server 4173 --directory docs
 ```
 
 Then open <http://localhost:4173>. Serve over HTTP rather than opening the file directly: the live demo
@@ -41,11 +41,11 @@ and as the `<base>` fallback in `404.html`. If you deploy somewhere else (a cust
 Cloudflare Pages), search and replace it.
 
 GitHub Pages can only publish from the repository root or `/docs` on a branch, so to publish this
-folder use a Pages workflow that uploads `website/` as the artifact (`actions/upload-pages-artifact`
-with `path: website`, then `actions/deploy-pages`), and set **Settings › Pages › Source** to
+folder use a Pages workflow that uploads `docs/` as the artifact (`actions/upload-pages-artifact`
+with `path: docs`, then `actions/deploy-pages`), and set **Settings › Pages › Source** to
 *GitHub Actions*.
 
-`website/**` is listed in `../.vscodeignore`, so none of this ships inside the VSIX.
+`docs/**` is listed in `../.vscodeignore`, so none of this ships inside the VSIX.
 
 ## Keeping it current
 
